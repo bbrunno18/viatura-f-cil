@@ -9,38 +9,188 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppViaturasRouteImport } from './routes/app.viaturas'
+import { Route as AppSaidaRouteImport } from './routes/app.saida'
+import { Route as AppHistoricoRouteImport } from './routes/app.historico'
+import { Route as AppCondutoresRouteImport } from './routes/app.condutores'
+import { Route as AppAdminRouteImport } from './routes/app.admin'
+import { Route as AppAbastecimentosIndexRouteImport } from './routes/app.abastecimentos.index'
+import { Route as AppRetornoViaturaIdRouteImport } from './routes/app.retorno.$viaturaId'
+import { Route as AppAbastecimentosNovoRouteImport } from './routes/app.abastecimentos.novo'
 
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppViaturasRoute = AppViaturasRouteImport.update({
+  id: '/viaturas',
+  path: '/viaturas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSaidaRoute = AppSaidaRouteImport.update({
+  id: '/saida',
+  path: '/saida',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHistoricoRoute = AppHistoricoRouteImport.update({
+  id: '/historico',
+  path: '/historico',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCondutoresRoute = AppCondutoresRouteImport.update({
+  id: '/condutores',
+  path: '/condutores',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminRoute = AppAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAbastecimentosIndexRoute = AppAbastecimentosIndexRouteImport.update({
+  id: '/abastecimentos/',
+  path: '/abastecimentos/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRetornoViaturaIdRoute = AppRetornoViaturaIdRouteImport.update({
+  id: '/retorno/$viaturaId',
+  path: '/retorno/$viaturaId',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAbastecimentosNovoRoute = AppAbastecimentosNovoRouteImport.update({
+  id: '/abastecimentos/novo',
+  path: '/abastecimentos/novo',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/app/admin': typeof AppAdminRoute
+  '/app/condutores': typeof AppCondutoresRoute
+  '/app/historico': typeof AppHistoricoRoute
+  '/app/saida': typeof AppSaidaRoute
+  '/app/viaturas': typeof AppViaturasRoute
+  '/app/': typeof AppIndexRoute
+  '/app/abastecimentos/novo': typeof AppAbastecimentosNovoRoute
+  '/app/retorno/$viaturaId': typeof AppRetornoViaturaIdRoute
+  '/app/abastecimentos/': typeof AppAbastecimentosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/app/admin': typeof AppAdminRoute
+  '/app/condutores': typeof AppCondutoresRoute
+  '/app/historico': typeof AppHistoricoRoute
+  '/app/saida': typeof AppSaidaRoute
+  '/app/viaturas': typeof AppViaturasRoute
+  '/app': typeof AppIndexRoute
+  '/app/abastecimentos/novo': typeof AppAbastecimentosNovoRoute
+  '/app/retorno/$viaturaId': typeof AppRetornoViaturaIdRoute
+  '/app/abastecimentos': typeof AppAbastecimentosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/app/admin': typeof AppAdminRoute
+  '/app/condutores': typeof AppCondutoresRoute
+  '/app/historico': typeof AppHistoricoRoute
+  '/app/saida': typeof AppSaidaRoute
+  '/app/viaturas': typeof AppViaturasRoute
+  '/app/': typeof AppIndexRoute
+  '/app/abastecimentos/novo': typeof AppAbastecimentosNovoRoute
+  '/app/retorno/$viaturaId': typeof AppRetornoViaturaIdRoute
+  '/app/abastecimentos/': typeof AppAbastecimentosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/auth'
+    | '/app/admin'
+    | '/app/condutores'
+    | '/app/historico'
+    | '/app/saida'
+    | '/app/viaturas'
+    | '/app/'
+    | '/app/abastecimentos/novo'
+    | '/app/retorno/$viaturaId'
+    | '/app/abastecimentos/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/app/admin'
+    | '/app/condutores'
+    | '/app/historico'
+    | '/app/saida'
+    | '/app/viaturas'
+    | '/app'
+    | '/app/abastecimentos/novo'
+    | '/app/retorno/$viaturaId'
+    | '/app/abastecimentos'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/auth'
+    | '/app/admin'
+    | '/app/condutores'
+    | '/app/historico'
+    | '/app/saida'
+    | '/app/viaturas'
+    | '/app/'
+    | '/app/abastecimentos/novo'
+    | '/app/retorno/$viaturaId'
+    | '/app/abastecimentos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +198,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/viaturas': {
+      id: '/app/viaturas'
+      path: '/viaturas'
+      fullPath: '/app/viaturas'
+      preLoaderRoute: typeof AppViaturasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/saida': {
+      id: '/app/saida'
+      path: '/saida'
+      fullPath: '/app/saida'
+      preLoaderRoute: typeof AppSaidaRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/historico': {
+      id: '/app/historico'
+      path: '/historico'
+      fullPath: '/app/historico'
+      preLoaderRoute: typeof AppHistoricoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/condutores': {
+      id: '/app/condutores'
+      path: '/condutores'
+      fullPath: '/app/condutores'
+      preLoaderRoute: typeof AppCondutoresRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/admin': {
+      id: '/app/admin'
+      path: '/admin'
+      fullPath: '/app/admin'
+      preLoaderRoute: typeof AppAdminRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/abastecimentos/': {
+      id: '/app/abastecimentos/'
+      path: '/abastecimentos'
+      fullPath: '/app/abastecimentos/'
+      preLoaderRoute: typeof AppAbastecimentosIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/retorno/$viaturaId': {
+      id: '/app/retorno/$viaturaId'
+      path: '/retorno/$viaturaId'
+      fullPath: '/app/retorno/$viaturaId'
+      preLoaderRoute: typeof AppRetornoViaturaIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/abastecimentos/novo': {
+      id: '/app/abastecimentos/novo'
+      path: '/abastecimentos/novo'
+      fullPath: '/app/abastecimentos/novo'
+      preLoaderRoute: typeof AppAbastecimentosNovoRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppAdminRoute: typeof AppAdminRoute
+  AppCondutoresRoute: typeof AppCondutoresRoute
+  AppHistoricoRoute: typeof AppHistoricoRoute
+  AppSaidaRoute: typeof AppSaidaRoute
+  AppViaturasRoute: typeof AppViaturasRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppAbastecimentosNovoRoute: typeof AppAbastecimentosNovoRoute
+  AppRetornoViaturaIdRoute: typeof AppRetornoViaturaIdRoute
+  AppAbastecimentosIndexRoute: typeof AppAbastecimentosIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppAdminRoute: AppAdminRoute,
+  AppCondutoresRoute: AppCondutoresRoute,
+  AppHistoricoRoute: AppHistoricoRoute,
+  AppSaidaRoute: AppSaidaRoute,
+  AppViaturasRoute: AppViaturasRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppAbastecimentosNovoRoute: AppAbastecimentosNovoRoute,
+  AppRetornoViaturaIdRoute: AppRetornoViaturaIdRoute,
+  AppAbastecimentosIndexRoute: AppAbastecimentosIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

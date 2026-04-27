@@ -13,6 +13,11 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppSaidaRouteImport } from './routes/app.saida'
+import { Route as AppCondutoresRouteImport } from './routes/app.condutores'
+import { Route as AppAbastecimentosIndexRouteImport } from './routes/app.abastecimentos.index'
+import { Route as AppRetornoViaturaIdRouteImport } from './routes/app.retorno.$viaturaId'
+import { Route as AppAbastecimentosNovoRouteImport } from './routes/app.abastecimentos.novo'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -34,31 +39,98 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSaidaRoute = AppSaidaRouteImport.update({
+  id: '/saida',
+  path: '/saida',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCondutoresRoute = AppCondutoresRouteImport.update({
+  id: '/condutores',
+  path: '/condutores',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAbastecimentosIndexRoute = AppAbastecimentosIndexRouteImport.update({
+  id: '/abastecimentos/',
+  path: '/abastecimentos/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRetornoViaturaIdRoute = AppRetornoViaturaIdRouteImport.update({
+  id: '/retorno/$viaturaId',
+  path: '/retorno/$viaturaId',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAbastecimentosNovoRoute = AppAbastecimentosNovoRouteImport.update({
+  id: '/abastecimentos/novo',
+  path: '/abastecimentos/novo',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/app/condutores': typeof AppCondutoresRoute
+  '/app/saida': typeof AppSaidaRoute
   '/app/': typeof AppIndexRoute
+  '/app/abastecimentos/novo': typeof AppAbastecimentosNovoRoute
+  '/app/retorno/$viaturaId': typeof AppRetornoViaturaIdRoute
+  '/app/abastecimentos/': typeof AppAbastecimentosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/app/condutores': typeof AppCondutoresRoute
+  '/app/saida': typeof AppSaidaRoute
   '/app': typeof AppIndexRoute
+  '/app/abastecimentos/novo': typeof AppAbastecimentosNovoRoute
+  '/app/retorno/$viaturaId': typeof AppRetornoViaturaIdRoute
+  '/app/abastecimentos': typeof AppAbastecimentosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/app/condutores': typeof AppCondutoresRoute
+  '/app/saida': typeof AppSaidaRoute
   '/app/': typeof AppIndexRoute
+  '/app/abastecimentos/novo': typeof AppAbastecimentosNovoRoute
+  '/app/retorno/$viaturaId': typeof AppRetornoViaturaIdRoute
+  '/app/abastecimentos/': typeof AppAbastecimentosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/auth' | '/app/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/auth'
+    | '/app/condutores'
+    | '/app/saida'
+    | '/app/'
+    | '/app/abastecimentos/novo'
+    | '/app/retorno/$viaturaId'
+    | '/app/abastecimentos/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/app'
-  id: '__root__' | '/' | '/app' | '/auth' | '/app/'
+  to:
+    | '/'
+    | '/auth'
+    | '/app/condutores'
+    | '/app/saida'
+    | '/app'
+    | '/app/abastecimentos/novo'
+    | '/app/retorno/$viaturaId'
+    | '/app/abastecimentos'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/auth'
+    | '/app/condutores'
+    | '/app/saida'
+    | '/app/'
+    | '/app/abastecimentos/novo'
+    | '/app/retorno/$viaturaId'
+    | '/app/abastecimentos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -97,15 +169,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/saida': {
+      id: '/app/saida'
+      path: '/saida'
+      fullPath: '/app/saida'
+      preLoaderRoute: typeof AppSaidaRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/condutores': {
+      id: '/app/condutores'
+      path: '/condutores'
+      fullPath: '/app/condutores'
+      preLoaderRoute: typeof AppCondutoresRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/abastecimentos/': {
+      id: '/app/abastecimentos/'
+      path: '/abastecimentos'
+      fullPath: '/app/abastecimentos/'
+      preLoaderRoute: typeof AppAbastecimentosIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/retorno/$viaturaId': {
+      id: '/app/retorno/$viaturaId'
+      path: '/retorno/$viaturaId'
+      fullPath: '/app/retorno/$viaturaId'
+      preLoaderRoute: typeof AppRetornoViaturaIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/abastecimentos/novo': {
+      id: '/app/abastecimentos/novo'
+      path: '/abastecimentos/novo'
+      fullPath: '/app/abastecimentos/novo'
+      preLoaderRoute: typeof AppAbastecimentosNovoRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppCondutoresRoute: typeof AppCondutoresRoute
+  AppSaidaRoute: typeof AppSaidaRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppAbastecimentosNovoRoute: typeof AppAbastecimentosNovoRoute
+  AppRetornoViaturaIdRoute: typeof AppRetornoViaturaIdRoute
+  AppAbastecimentosIndexRoute: typeof AppAbastecimentosIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppCondutoresRoute: AppCondutoresRoute,
+  AppSaidaRoute: AppSaidaRoute,
   AppIndexRoute: AppIndexRoute,
+  AppAbastecimentosNovoRoute: AppAbastecimentosNovoRoute,
+  AppRetornoViaturaIdRoute: AppRetornoViaturaIdRoute,
+  AppAbastecimentosIndexRoute: AppAbastecimentosIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

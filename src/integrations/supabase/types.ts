@@ -14,16 +14,222 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      abastecimentos: {
+        Row: {
+          condutor_id: string
+          created_at: string
+          data_abastecimento: string
+          id: string
+          litros: number
+          registrado_por: string | null
+          valor_total: number
+          viatura_id: string
+        }
+        Insert: {
+          condutor_id: string
+          created_at?: string
+          data_abastecimento: string
+          id?: string
+          litros: number
+          registrado_por?: string | null
+          valor_total: number
+          viatura_id: string
+        }
+        Update: {
+          condutor_id?: string
+          created_at?: string
+          data_abastecimento?: string
+          id?: string
+          litros?: number
+          registrado_por?: string | null
+          valor_total?: number
+          viatura_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "abastecimentos_condutor_id_fkey"
+            columns: ["condutor_id"]
+            isOneToOne: false
+            referencedRelation: "condutores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "abastecimentos_viatura_id_fkey"
+            columns: ["viatura_id"]
+            isOneToOne: false
+            referencedRelation: "viaturas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      condutores: {
+        Row: {
+          cpf: string
+          created_at: string
+          id: string
+          nome: string
+        }
+        Insert: {
+          cpf: string
+          created_at?: string
+          id?: string
+          nome: string
+        }
+        Update: {
+          cpf?: string
+          created_at?: string
+          id?: string
+          nome?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          nome: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          nome?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          nome?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      utilizacoes: {
+        Row: {
+          condutor_id: string
+          created_at: string
+          data_retorno: string | null
+          data_saida: string
+          id: string
+          km_final: number | null
+          km_inicial: number
+          latitude_estacionamento: number | null
+          local_estacionamento: string | null
+          local_saida: string
+          longitude_estacionamento: number | null
+          registrado_por: string | null
+          viatura_id: string
+        }
+        Insert: {
+          condutor_id: string
+          created_at?: string
+          data_retorno?: string | null
+          data_saida: string
+          id?: string
+          km_final?: number | null
+          km_inicial: number
+          latitude_estacionamento?: number | null
+          local_estacionamento?: string | null
+          local_saida: string
+          longitude_estacionamento?: number | null
+          registrado_por?: string | null
+          viatura_id: string
+        }
+        Update: {
+          condutor_id?: string
+          created_at?: string
+          data_retorno?: string | null
+          data_saida?: string
+          id?: string
+          km_final?: number | null
+          km_inicial?: number
+          latitude_estacionamento?: number | null
+          local_estacionamento?: string | null
+          local_saida?: string
+          longitude_estacionamento?: number | null
+          registrado_por?: string | null
+          viatura_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "utilizacoes_condutor_id_fkey"
+            columns: ["condutor_id"]
+            isOneToOne: false
+            referencedRelation: "condutores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "utilizacoes_viatura_id_fkey"
+            columns: ["viatura_id"]
+            isOneToOne: false
+            referencedRelation: "viaturas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      viaturas: {
+        Row: {
+          ativa: boolean
+          cor: string
+          created_at: string
+          id: string
+          modelo: string
+          placa: string | null
+        }
+        Insert: {
+          ativa?: boolean
+          cor: string
+          created_at?: string
+          id?: string
+          modelo: string
+          placa?: string | null
+        }
+        Update: {
+          ativa?: boolean
+          cor?: string
+          created_at?: string
+          id?: string
+          modelo?: string
+          placa?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +356,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

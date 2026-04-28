@@ -83,6 +83,42 @@ export type Database = {
         }
         Relationships: []
       }
+      incidentes: {
+        Row: {
+          condutor_id: string | null
+          created_at: string
+          data_ocorrencia: string
+          descricao: string
+          fotos: string[]
+          id: string
+          registrado_por: string | null
+          utilizacao_id: string | null
+          viatura_id: string
+        }
+        Insert: {
+          condutor_id?: string | null
+          created_at?: string
+          data_ocorrencia?: string
+          descricao: string
+          fotos?: string[]
+          id?: string
+          registrado_por?: string | null
+          utilizacao_id?: string | null
+          viatura_id: string
+        }
+        Update: {
+          condutor_id?: string | null
+          created_at?: string
+          data_ocorrencia?: string
+          descricao?: string
+          fotos?: string[]
+          id?: string
+          registrado_por?: string | null
+          utilizacao_id?: string | null
+          viatura_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           aprovado: boolean
@@ -133,6 +169,7 @@ export type Database = {
       }
       utilizacoes: {
         Row: {
+          assinatura_retorno: string | null
           condutor_id: string
           created_at: string
           data_retorno: string | null
@@ -148,6 +185,7 @@ export type Database = {
           viatura_id: string
         }
         Insert: {
+          assinatura_retorno?: string | null
           condutor_id: string
           created_at?: string
           data_retorno?: string | null
@@ -163,6 +201,7 @@ export type Database = {
           viatura_id: string
         }
         Update: {
+          assinatura_retorno?: string | null
           condutor_id?: string
           created_at?: string
           data_retorno?: string | null

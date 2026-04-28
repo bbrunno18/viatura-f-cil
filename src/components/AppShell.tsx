@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, LogOut, FileSpreadsheet, Fuel, Users, Shield } from "lucide-react";
+import { Home, LogOut, AlertTriangle, Fuel, Users, Shield } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { to: "/app", label: "Início", icon: Home },
   { to: "/app/abastecimentos", label: "Abast.", icon: Fuel },
+  { to: "/app/incidentes", label: "Incidentes", icon: AlertTriangle },
   { to: "/app/condutores", label: "Condutores", icon: Users },
-  { to: "/app/historico", label: "Histórico", icon: FileSpreadsheet },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {

@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppViaturasRouteImport } from './routes/app.viaturas'
 import { Route as AppSaidaRouteImport } from './routes/app.saida'
+import { Route as AppIncidentesRouteImport } from './routes/app.incidentes'
 import { Route as AppHistoricoRouteImport } from './routes/app.historico'
 import { Route as AppCondutoresRouteImport } from './routes/app.condutores'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
@@ -58,6 +59,11 @@ const AppSaidaRoute = AppSaidaRouteImport.update({
   path: '/saida',
   getParentRoute: () => AppRoute,
 } as any)
+const AppIncidentesRoute = AppIncidentesRouteImport.update({
+  id: '/incidentes',
+  path: '/incidentes',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppHistoricoRoute = AppHistoricoRouteImport.update({
   id: '/historico',
   path: '/historico',
@@ -97,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/app/admin': typeof AppAdminRoute
   '/app/condutores': typeof AppCondutoresRoute
   '/app/historico': typeof AppHistoricoRoute
+  '/app/incidentes': typeof AppIncidentesRoute
   '/app/saida': typeof AppSaidaRoute
   '/app/viaturas': typeof AppViaturasRoute
   '/app/': typeof AppIndexRoute
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/app/admin': typeof AppAdminRoute
   '/app/condutores': typeof AppCondutoresRoute
   '/app/historico': typeof AppHistoricoRoute
+  '/app/incidentes': typeof AppIncidentesRoute
   '/app/saida': typeof AppSaidaRoute
   '/app/viaturas': typeof AppViaturasRoute
   '/app': typeof AppIndexRoute
@@ -127,6 +135,7 @@ export interface FileRoutesById {
   '/app/admin': typeof AppAdminRoute
   '/app/condutores': typeof AppCondutoresRoute
   '/app/historico': typeof AppHistoricoRoute
+  '/app/incidentes': typeof AppIncidentesRoute
   '/app/saida': typeof AppSaidaRoute
   '/app/viaturas': typeof AppViaturasRoute
   '/app/': typeof AppIndexRoute
@@ -144,6 +153,7 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/condutores'
     | '/app/historico'
+    | '/app/incidentes'
     | '/app/saida'
     | '/app/viaturas'
     | '/app/'
@@ -158,6 +168,7 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/condutores'
     | '/app/historico'
+    | '/app/incidentes'
     | '/app/saida'
     | '/app/viaturas'
     | '/app'
@@ -173,6 +184,7 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/condutores'
     | '/app/historico'
+    | '/app/incidentes'
     | '/app/saida'
     | '/app/viaturas'
     | '/app/'
@@ -239,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSaidaRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/incidentes': {
+      id: '/app/incidentes'
+      path: '/incidentes'
+      fullPath: '/app/incidentes'
+      preLoaderRoute: typeof AppIncidentesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/historico': {
       id: '/app/historico'
       path: '/historico'
@@ -288,6 +307,7 @@ interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppCondutoresRoute: typeof AppCondutoresRoute
   AppHistoricoRoute: typeof AppHistoricoRoute
+  AppIncidentesRoute: typeof AppIncidentesRoute
   AppSaidaRoute: typeof AppSaidaRoute
   AppViaturasRoute: typeof AppViaturasRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -300,6 +320,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppCondutoresRoute: AppCondutoresRoute,
   AppHistoricoRoute: AppHistoricoRoute,
+  AppIncidentesRoute: AppIncidentesRoute,
   AppSaidaRoute: AppSaidaRoute,
   AppViaturasRoute: AppViaturasRoute,
   AppIndexRoute: AppIndexRoute,

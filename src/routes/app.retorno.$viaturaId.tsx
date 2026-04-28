@@ -4,11 +4,13 @@ import { useState } from "react";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { GpsCapture, type Coords } from "@/components/GpsCapture";
+import { SignaturePad } from "@/components/SignaturePad";
 import { formatDateTime } from "@/lib/format";
 
 export const Route = createFileRoute("/app/retorno/$viaturaId")({
@@ -18,11 +20,13 @@ export const Route = createFileRoute("/app/retorno/$viaturaId")({
 function Retorno() {
   const { viaturaId } = Route.useParams();
   const navigate = useNavigate();
+  const { aprovado } = useAuth();
   const [busy, setBusy] = useState(false);
   const [data, setData] = useState(() => new Date().toISOString().slice(0, 16));
   const [km, setKm] = useState("");
   const [local, setLocal] = useState("");
   const [coords, setCoords] = useState<Coords>(null);
+  const [assinatura, setAssinatura] = useState<string | null>(null);
 
   const { data: aberta, isLoading } = useQuery({
     queryKey: ["aberta", viaturaId],
@@ -41,7 +45,9 @@ function Retorno() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!aberta) return;
+    if (!aprovado) return toast.error("Sua conta precisa ser aprovada pelo administrador.");
     if (!km || !data) return toast.error("Preencha KM e data");
+    if (!assinatura) return toast.error("A assinatura do condutor é obrigatória");
     const kmNum = parseInt(km, 10);
     if (kmNum < aberta.km_inicial) return toast.error(`KM final deve ser ≥ ${aberta.km_inicial}`);
     setBusy(true);
@@ -53,11 +59,12 @@ function Retorno() {
         local_estacionamento: local || null,
         latitude_estacionamento: coords?.lat ?? null,
         longitude_estacionamento: coords?.lng ?? null,
+        assinatura_retorno: assinatura,
       })
       .eq("id", aberta.id);
     setBusy(false);
     if (error) return toast.error(error.message);
-    toast.success("Retorno registrado");
+    toast.success("Retorno registrado com assinatura");
     navigate({ to: "/app" });
   }
 
@@ -106,6 +113,12 @@ function Retorno() {
             onChange={setCoords}
             localValue={local}
             onLocalChange={setLocal}
+          />
+
+          <SignaturePad
+            value={assinatura}
+            onChange={setAssinatura}
+            label="Assinatura do condutor"
           />
 
           <Button type="submit" className="w-full h-11 bg-gradient-primary" disabled={busy}>

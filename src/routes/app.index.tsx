@@ -77,6 +77,16 @@ function Dashboard() {
         <p className="text-sm text-muted-foreground">Selecione uma viatura para registrar saída ou retorno.</p>
       </div>
 
+      {profileLoaded && !aprovado && (
+        <Card className="p-4 bg-warning/10 border-warning/40 flex gap-3 items-start">
+          <Clock className="h-5 w-5 text-warning-foreground shrink-0 mt-0.5"/>
+          <div className="text-sm">
+            <div className="font-semibold">Conta pendente de aprovação</div>
+            <div className="text-muted-foreground">Você só poderá registrar saídas, retornos e abastecimentos após o administrador aprovar sua conta.</div>
+          </div>
+        </Card>
+      )}
+
       <div className="grid grid-cols-2 gap-3">
         <Link to="/app/saida">
           <Card className="p-4 bg-gradient-primary text-primary-foreground border-0 shadow-elegant hover:scale-[1.02] transition-transform">

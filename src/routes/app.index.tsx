@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Car, ArrowRight, MapPin, Fuel, Plus, AlertCircle } from "lucide-react";
+import { Car, ArrowRight, MapPin, Fuel, Plus, AlertCircle, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDateTime } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/app/")({
   component: Dashboard,
@@ -37,6 +38,7 @@ type UltimaInfo = {
 };
 
 function Dashboard() {
+  const { aprovado, profileLoaded } = useAuth();
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard"],
     queryFn: async () => {

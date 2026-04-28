@@ -3,6 +3,7 @@ import { Home, LogOut, AlertTriangle, Fuel, Users, Shield } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import logoMJ from "@/assets/logo-mj.png";
 
 const navItems = [
   { to: "/app", label: "Início", icon: Home },
@@ -21,8 +22,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="bg-gradient-hero text-sidebar-foreground safe-top sticky top-0 z-30 shadow-elegant">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/app" className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-xl bg-gradient-accent flex items-center justify-center shadow-card">
-              <Shield className="h-5 w-5 text-accent-foreground" />
+            <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center shadow-card overflow-hidden p-1">
+              <img src={logoMJ} alt="Ministério da Justiça e Segurança Pública" className="h-full w-full object-contain" />
             </div>
             <div className="leading-tight">
               <div className="font-display font-bold text-base">Frota COLOG</div>

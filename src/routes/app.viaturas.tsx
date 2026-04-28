@@ -51,28 +51,34 @@ function ViaturasAdmin() {
       <Link to="/app" className="inline-flex items-center text-sm text-muted-foreground"><ChevronLeft className="h-4 w-4"/> Voltar</Link>
       <h1 className="text-2xl font-bold">Viaturas</h1>
 
-      <Card className="p-5 shadow-card">
-        <form onSubmit={add} className="space-y-3">
-          <div className="flex items-center gap-2 text-sm font-semibold"><Plus className="h-4 w-4 text-primary"/> Adicionar viatura</div>
-          <div>
-            <Label>Modelo</Label>
-            <Input value={modelo} onChange={(e) => setModelo(e.target.value)} placeholder="Ex.: Toyota Hilux"/>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
+      {isAdmin ? (
+        <Card className="p-5 shadow-card">
+          <form onSubmit={add} className="space-y-3">
+            <div className="flex items-center gap-2 text-sm font-semibold"><Plus className="h-4 w-4 text-primary"/> Adicionar viatura</div>
             <div>
-              <Label>Cor</Label>
-              <Input value={cor} onChange={(e) => setCor(e.target.value)} placeholder="Branca"/>
+              <Label>Modelo</Label>
+              <Input value={modelo} onChange={(e) => setModelo(e.target.value)} placeholder="Ex.: Toyota Hilux"/>
             </div>
-            <div>
-              <Label>Placa (opc.)</Label>
-              <Input value={placa} onChange={(e) => setPlaca(e.target.value.toUpperCase())} placeholder="ABC-1D23"/>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Cor</Label>
+                <Input value={cor} onChange={(e) => setCor(e.target.value)} placeholder="Branca"/>
+              </div>
+              <div>
+                <Label>Placa (opc.)</Label>
+                <Input value={placa} onChange={(e) => setPlaca(e.target.value.toUpperCase())} placeholder="ABC-1D23"/>
+              </div>
             </div>
-          </div>
-          <Button disabled={busy} className="w-full bg-gradient-primary">
-            {busy ? <Loader2 className="h-4 w-4 animate-spin"/> : "Cadastrar"}
-          </Button>
-        </form>
-      </Card>
+            <Button disabled={busy} className="w-full bg-gradient-primary">
+              {busy ? <Loader2 className="h-4 w-4 animate-spin"/> : "Cadastrar"}
+            </Button>
+          </form>
+        </Card>
+      ) : (
+        <Card className="p-4 bg-muted/40 text-sm text-muted-foreground">
+          Apenas administradores podem cadastrar novas viaturas.
+        </Card>
+      )}
 
       {isLoading ? (
         <Loader2 className="h-5 w-5 animate-spin text-primary mx-auto"/>

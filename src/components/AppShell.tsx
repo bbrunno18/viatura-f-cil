@@ -25,7 +25,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Shield className="h-5 w-5 text-accent-foreground" />
             </div>
             <div className="leading-tight">
-              <div className="font-display font-bold text-base">FrotaCop</div>
+              <div className="font-display font-bold text-base">Frota COLOG</div>
               <div className="text-[10px] uppercase tracking-widest text-sidebar-foreground/70">
                 Controle de Viaturas
               </div>

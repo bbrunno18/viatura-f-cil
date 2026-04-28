@@ -2,7 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { motion } from "framer-motion";
-import { Shield, Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
+import logoMJ from "@/assets/logo-mj.png";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -103,8 +104,8 @@ function AuthPage() {
           className="w-full max-w-md"
         >
           <div className="text-center mb-7 text-sidebar-foreground">
-            <div className="mx-auto h-16 w-16 rounded-2xl bg-gradient-accent flex items-center justify-center shadow-elegant mb-4">
-              <Shield className="h-8 w-8 text-accent-foreground" />
+            <div className="mx-auto h-20 w-20 rounded-2xl bg-white flex items-center justify-center shadow-elegant mb-4 p-2">
+              <img src={logoMJ} alt="Ministério da Justiça e Segurança Pública" className="h-full w-full object-contain" />
             </div>
             <h1 className="font-display text-3xl font-bold">Frota COLOG</h1>
             <p className="text-sm text-sidebar-foreground/75 mt-1 tracking-wide uppercase">

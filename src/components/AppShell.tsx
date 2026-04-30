@@ -13,7 +13,13 @@ const navItems = [
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, isAdmin, isMaster, signOut } = useAuth();
+  const roleLabel = isMaster ? "Administrador Master" : isAdmin ? "Administrador" : "Condutor";
+  const roleClass = isMaster
+    ? "bg-accent/30 border-accent/60 text-accent"
+    : isAdmin
+    ? "bg-primary/20 border-primary/40 text-sidebar-foreground"
+    : "bg-sidebar-foreground/10 border-sidebar-foreground/20 text-sidebar-foreground/90";
   const location = useLocation();
 
   return (
@@ -53,8 +59,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         {user && (
-          <div className="max-w-2xl mx-auto px-4 pb-2 text-xs text-sidebar-foreground/80 truncate">
-            {user.email}
+          <div className="max-w-2xl mx-auto px-4 pb-2 flex items-center justify-between gap-2 text-xs text-sidebar-foreground/80">
+            <span className="truncate">{user.email}</span>
+            <span className={cn("shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider", roleClass)}>
+              {roleLabel}
+            </span>
           </div>
         )}
       </header>

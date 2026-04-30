@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
+const MASTER_EMAIL = "brunno.almeida@mj.gov.br";
+
 interface AuthContextValue {
   user: User | null;
   session: Session | null;
@@ -30,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(sess);
       setUser(sess?.user ?? null);
       if (sess?.user) {
-        setTimeout(() => loadProfile(sess.user.id), 0);
+        setTimeout(() => loadProfile(sess.user.id, sess.user.email ?? null), 0);
       } else {
         setIsAdmin(false);
         setIsMaster(false);
@@ -42,14 +44,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
       setUser(data.session?.user ?? null);
-      if (data.session?.user) loadProfile(data.session.user.id);
+      if (data.session?.user) loadProfile(data.session.user.id, data.session.user.email ?? null);
       setLoading(false);
     });
 
     // Atualiza papel/aprovação ao voltar para a aba (caso Master tenha mudado)
     const onFocus = () => {
       supabase.auth.getSession().then(({ data }) => {
-        if (data.session?.user) loadProfile(data.session.user.id);
+        if (data.session?.user) loadProfile(data.session.user.id, data.session.user.email ?? null);
       });
     };
     window.addEventListener("focus", onFocus);
@@ -60,13 +62,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  async function loadProfile(uid: string) {
+  async function loadProfile(uid: string, email?: string | null) {
     const [rolesRes, profRes] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", uid),
       supabase.from("profiles").select("aprovado").eq("id", uid).maybeSingle(),
     ]);
     const roles = rolesRes.data ?? [];
-    const master = roles.some((r: any) => r.role === "master");
+    const emailIsMaster = (email ?? "").trim().toLowerCase() === MASTER_EMAIL;
+    const master = emailIsMaster || roles.some((r: any) => r.role === "master");
     const admin = roles.some((r: any) => r.role === "admin") || master;
     setIsMaster(master);
     setIsAdmin(admin);

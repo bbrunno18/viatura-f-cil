@@ -104,8 +104,11 @@ function AuthPage() {
           className="w-full max-w-md"
         >
           <div className="text-center mb-7 text-sidebar-foreground">
-            <div className="mx-auto h-20 w-20 rounded-2xl bg-white flex items-center justify-center shadow-elegant mb-4 p-2">
-              <img src={logoMJ} alt="Ministério da Justiça e Segurança Pública" className="h-full w-full object-contain" />
+            <div className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-sidebar-foreground/85 mb-3">
+              Ministério da Justiça e Segurança Pública
+            </div>
+            <div className="mx-auto h-24 w-24 rounded-2xl bg-white flex items-center justify-center shadow-elegant mb-4 overflow-hidden">
+              <img src={logoMJ} alt="Easy Patrol" className="h-full w-full object-cover" />
             </div>
             <h1 className="font-display text-3xl font-bold">Frota COLOG</h1>
             <p className="text-sm text-sidebar-foreground/75 mt-1 tracking-wide uppercase">

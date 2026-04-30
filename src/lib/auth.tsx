@@ -46,7 +46,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    return () => sub.subscription.unsubscribe();
+    // Atualiza papel/aprovação ao voltar para a aba (caso Master tenha mudado)
+    const onFocus = () => {
+      supabase.auth.getSession().then(({ data }) => {
+        if (data.session?.user) loadProfile(data.session.user.id);
+      });
+    };
+    window.addEventListener("focus", onFocus);
+
+    return () => {
+      sub.subscription.unsubscribe();
+      window.removeEventListener("focus", onFocus);
+    };
   }, []);
 
   async function loadProfile(uid: string) {

@@ -243,7 +243,12 @@ function AdminPanel() {
           <TabsTrigger value="cond"><Users className="h-3.5 w-3.5 mr-1" />Cond.</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="users">
+        <TabsContent value="users" className="space-y-3">
+          {isMaster && (
+            <Card className="p-3 bg-accent/10 border-accent/40 text-xs text-foreground">
+              <b>Gestão de Papéis (Master):</b> use os botões <b>Tornar Admin</b> ou <b>Tornar Condutor</b> para definir o papel de cada usuário. Apenas o Master pode realizar essa alteração.
+            </Card>
+          )}
           <Card className="overflow-x-auto shadow-card">
             <Table>
               <TableHeader>

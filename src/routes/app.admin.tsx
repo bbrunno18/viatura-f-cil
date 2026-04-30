@@ -278,22 +278,22 @@ function AdminPanel() {
                       <TableCell className="text-right">
                         <div className="flex gap-1 justify-end flex-wrap">
                           {!p.aprovado ? (
-                            <Button size="sm" variant="outline" onClick={() => aprovar(p.id)}>
-                              <Check className="h-3.5 w-3.5" />
+                            <Button size="sm" variant="outline" onClick={() => aprovar(p.id)} title="Aprovar usuário">
+                              <Check className="h-3.5 w-3.5 mr-1" /> Aprovar
                             </Button>
                           ) : (
-                            <Button size="sm" variant="ghost" onClick={() => rejeitar(p.id)}>
+                            <Button size="sm" variant="ghost" onClick={() => rejeitar(p.id)} title="Revogar aprovação">
                               <X className="h-3.5 w-3.5" />
                             </Button>
                           )}
                           {isMaster && !isM && (
                             isA ? (
-                              <Button size="sm" variant="ghost" onClick={() => promover(p.id, "user")}>
-                                Rem. admin
+                              <Button size="sm" variant="outline" onClick={() => promover(p.id, "user")} title="Definir como Condutor">
+                                <Users className="h-3.5 w-3.5 mr-1" /> Tornar Condutor
                               </Button>
                             ) : (
-                              <Button size="sm" variant="outline" onClick={() => promover(p.id, "admin")}>
-                                <UserCog className="h-3.5 w-3.5 mr-1" /> Tornar admin
+                              <Button size="sm" className="bg-gradient-primary" onClick={() => promover(p.id, "admin")} title="Definir como Administrador">
+                                <UserCog className="h-3.5 w-3.5 mr-1" /> Tornar Admin
                               </Button>
                             )
                           )}

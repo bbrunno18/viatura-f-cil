@@ -16,10 +16,15 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppViaturasRouteImport } from './routes/app.viaturas'
 import { Route as AppSaidaRouteImport } from './routes/app.saida'
+import { Route as AppReservasRouteImport } from './routes/app.reservas'
+import { Route as AppRelatoriosRouteImport } from './routes/app.relatorios'
+import { Route as AppMapaRouteImport } from './routes/app.mapa'
+import { Route as AppManutencaoRouteImport } from './routes/app.manutencao'
 import { Route as AppIncidentesRouteImport } from './routes/app.incidentes'
 import { Route as AppHistoricoRouteImport } from './routes/app.historico'
 import { Route as AppDisponiveisRouteImport } from './routes/app.disponiveis'
 import { Route as AppCondutoresRouteImport } from './routes/app.condutores'
+import { Route as AppAuditoriaRouteImport } from './routes/app.auditoria'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
 import { Route as AppAbastecimentosIndexRouteImport } from './routes/app.abastecimentos.index'
 import { Route as AppRetornoViaturaIdRouteImport } from './routes/app.retorno.$viaturaId'
@@ -60,6 +65,26 @@ const AppSaidaRoute = AppSaidaRouteImport.update({
   path: '/saida',
   getParentRoute: () => AppRoute,
 } as any)
+const AppReservasRoute = AppReservasRouteImport.update({
+  id: '/reservas',
+  path: '/reservas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRelatoriosRoute = AppRelatoriosRouteImport.update({
+  id: '/relatorios',
+  path: '/relatorios',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMapaRoute = AppMapaRouteImport.update({
+  id: '/mapa',
+  path: '/mapa',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppManutencaoRoute = AppManutencaoRouteImport.update({
+  id: '/manutencao',
+  path: '/manutencao',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppIncidentesRoute = AppIncidentesRouteImport.update({
   id: '/incidentes',
   path: '/incidentes',
@@ -78,6 +103,11 @@ const AppDisponiveisRoute = AppDisponiveisRouteImport.update({
 const AppCondutoresRoute = AppCondutoresRouteImport.update({
   id: '/condutores',
   path: '/condutores',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAuditoriaRoute = AppAuditoriaRouteImport.update({
+  id: '/auditoria',
+  path: '/auditoria',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAdminRoute = AppAdminRouteImport.update({
@@ -107,10 +137,15 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/app/admin': typeof AppAdminRoute
+  '/app/auditoria': typeof AppAuditoriaRoute
   '/app/condutores': typeof AppCondutoresRoute
   '/app/disponiveis': typeof AppDisponiveisRoute
   '/app/historico': typeof AppHistoricoRoute
   '/app/incidentes': typeof AppIncidentesRoute
+  '/app/manutencao': typeof AppManutencaoRoute
+  '/app/mapa': typeof AppMapaRoute
+  '/app/relatorios': typeof AppRelatoriosRoute
+  '/app/reservas': typeof AppReservasRoute
   '/app/saida': typeof AppSaidaRoute
   '/app/viaturas': typeof AppViaturasRoute
   '/app/': typeof AppIndexRoute
@@ -123,10 +158,15 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/app/admin': typeof AppAdminRoute
+  '/app/auditoria': typeof AppAuditoriaRoute
   '/app/condutores': typeof AppCondutoresRoute
   '/app/disponiveis': typeof AppDisponiveisRoute
   '/app/historico': typeof AppHistoricoRoute
   '/app/incidentes': typeof AppIncidentesRoute
+  '/app/manutencao': typeof AppManutencaoRoute
+  '/app/mapa': typeof AppMapaRoute
+  '/app/relatorios': typeof AppRelatoriosRoute
+  '/app/reservas': typeof AppReservasRoute
   '/app/saida': typeof AppSaidaRoute
   '/app/viaturas': typeof AppViaturasRoute
   '/app': typeof AppIndexRoute
@@ -141,10 +181,15 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/app/admin': typeof AppAdminRoute
+  '/app/auditoria': typeof AppAuditoriaRoute
   '/app/condutores': typeof AppCondutoresRoute
   '/app/disponiveis': typeof AppDisponiveisRoute
   '/app/historico': typeof AppHistoricoRoute
   '/app/incidentes': typeof AppIncidentesRoute
+  '/app/manutencao': typeof AppManutencaoRoute
+  '/app/mapa': typeof AppMapaRoute
+  '/app/relatorios': typeof AppRelatoriosRoute
+  '/app/reservas': typeof AppReservasRoute
   '/app/saida': typeof AppSaidaRoute
   '/app/viaturas': typeof AppViaturasRoute
   '/app/': typeof AppIndexRoute
@@ -160,10 +205,15 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/app/admin'
+    | '/app/auditoria'
     | '/app/condutores'
     | '/app/disponiveis'
     | '/app/historico'
     | '/app/incidentes'
+    | '/app/manutencao'
+    | '/app/mapa'
+    | '/app/relatorios'
+    | '/app/reservas'
     | '/app/saida'
     | '/app/viaturas'
     | '/app/'
@@ -176,10 +226,15 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/app/admin'
+    | '/app/auditoria'
     | '/app/condutores'
     | '/app/disponiveis'
     | '/app/historico'
     | '/app/incidentes'
+    | '/app/manutencao'
+    | '/app/mapa'
+    | '/app/relatorios'
+    | '/app/reservas'
     | '/app/saida'
     | '/app/viaturas'
     | '/app'
@@ -193,10 +248,15 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/app/admin'
+    | '/app/auditoria'
     | '/app/condutores'
     | '/app/disponiveis'
     | '/app/historico'
     | '/app/incidentes'
+    | '/app/manutencao'
+    | '/app/mapa'
+    | '/app/relatorios'
+    | '/app/reservas'
     | '/app/saida'
     | '/app/viaturas'
     | '/app/'
@@ -263,6 +323,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSaidaRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/reservas': {
+      id: '/app/reservas'
+      path: '/reservas'
+      fullPath: '/app/reservas'
+      preLoaderRoute: typeof AppReservasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/relatorios': {
+      id: '/app/relatorios'
+      path: '/relatorios'
+      fullPath: '/app/relatorios'
+      preLoaderRoute: typeof AppRelatoriosRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/mapa': {
+      id: '/app/mapa'
+      path: '/mapa'
+      fullPath: '/app/mapa'
+      preLoaderRoute: typeof AppMapaRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/manutencao': {
+      id: '/app/manutencao'
+      path: '/manutencao'
+      fullPath: '/app/manutencao'
+      preLoaderRoute: typeof AppManutencaoRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/incidentes': {
       id: '/app/incidentes'
       path: '/incidentes'
@@ -289,6 +377,13 @@ declare module '@tanstack/react-router' {
       path: '/condutores'
       fullPath: '/app/condutores'
       preLoaderRoute: typeof AppCondutoresRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/auditoria': {
+      id: '/app/auditoria'
+      path: '/auditoria'
+      fullPath: '/app/auditoria'
+      preLoaderRoute: typeof AppAuditoriaRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/admin': {
@@ -324,10 +419,15 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
+  AppAuditoriaRoute: typeof AppAuditoriaRoute
   AppCondutoresRoute: typeof AppCondutoresRoute
   AppDisponiveisRoute: typeof AppDisponiveisRoute
   AppHistoricoRoute: typeof AppHistoricoRoute
   AppIncidentesRoute: typeof AppIncidentesRoute
+  AppManutencaoRoute: typeof AppManutencaoRoute
+  AppMapaRoute: typeof AppMapaRoute
+  AppRelatoriosRoute: typeof AppRelatoriosRoute
+  AppReservasRoute: typeof AppReservasRoute
   AppSaidaRoute: typeof AppSaidaRoute
   AppViaturasRoute: typeof AppViaturasRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -338,10 +438,15 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
+  AppAuditoriaRoute: AppAuditoriaRoute,
   AppCondutoresRoute: AppCondutoresRoute,
   AppDisponiveisRoute: AppDisponiveisRoute,
   AppHistoricoRoute: AppHistoricoRoute,
   AppIncidentesRoute: AppIncidentesRoute,
+  AppManutencaoRoute: AppManutencaoRoute,
+  AppMapaRoute: AppMapaRoute,
+  AppRelatoriosRoute: AppRelatoriosRoute,
+  AppReservasRoute: AppReservasRoute,
   AppSaidaRoute: AppSaidaRoute,
   AppViaturasRoute: AppViaturasRoute,
   AppIndexRoute: AppIndexRoute,
@@ -361,12 +466,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

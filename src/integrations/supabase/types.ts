@@ -62,6 +62,39 @@ export type Database = {
           },
         ]
       }
+      audit_log: {
+        Row: {
+          acao: string
+          created_at: string
+          detalhes: Json | null
+          id: string
+          registro_id: string | null
+          tabela: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          acao: string
+          created_at?: string
+          detalhes?: Json | null
+          id?: string
+          registro_id?: string | null
+          tabela?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          acao?: string
+          created_at?: string
+          detalhes?: Json | null
+          id?: string
+          registro_id?: string | null
+          tabela?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       condutores: {
         Row: {
           cpf: string
@@ -119,6 +152,48 @@ export type Database = {
         }
         Relationships: []
       }
+      manutencoes: {
+        Row: {
+          created_at: string
+          custo: number | null
+          data_servico: string
+          descricao: string | null
+          id: string
+          km_servico: number | null
+          proxima_data: string | null
+          proxima_km: number | null
+          registrado_por: string | null
+          tipo: string
+          viatura_id: string
+        }
+        Insert: {
+          created_at?: string
+          custo?: number | null
+          data_servico: string
+          descricao?: string | null
+          id?: string
+          km_servico?: number | null
+          proxima_data?: string | null
+          proxima_km?: number | null
+          registrado_por?: string | null
+          tipo: string
+          viatura_id: string
+        }
+        Update: {
+          created_at?: string
+          custo?: number | null
+          data_servico?: string
+          descricao?: string | null
+          id?: string
+          km_servico?: number | null
+          proxima_data?: string | null
+          proxima_km?: number | null
+          registrado_por?: string | null
+          tipo?: string
+          viatura_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           aprovado: boolean
@@ -143,6 +218,42 @@ export type Database = {
           id?: string
           nome?: string
           secretaria?: string | null
+        }
+        Relationships: []
+      }
+      reservas: {
+        Row: {
+          condutor_id: string
+          created_at: string
+          fim: string
+          id: string
+          inicio: string
+          observacao: string | null
+          registrado_por: string | null
+          status: string
+          viatura_id: string
+        }
+        Insert: {
+          condutor_id: string
+          created_at?: string
+          fim: string
+          id?: string
+          inicio: string
+          observacao?: string | null
+          registrado_por?: string | null
+          status?: string
+          viatura_id: string
+        }
+        Update: {
+          condutor_id?: string
+          created_at?: string
+          fim?: string
+          id?: string
+          inicio?: string
+          observacao?: string | null
+          registrado_por?: string | null
+          status?: string
+          viatura_id?: string
         }
         Relationships: []
       }
@@ -239,6 +350,7 @@ export type Database = {
           cor: string
           created_at: string
           id: string
+          km_atual: number | null
           modelo: string
           placa: string | null
         }
@@ -247,6 +359,7 @@ export type Database = {
           cor: string
           created_at?: string
           id?: string
+          km_atual?: number | null
           modelo: string
           placa?: string | null
         }
@@ -255,6 +368,7 @@ export type Database = {
           cor?: string
           created_at?: string
           id?: string
+          km_atual?: number | null
           modelo?: string
           placa?: string | null
         }

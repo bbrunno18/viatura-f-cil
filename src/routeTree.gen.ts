@@ -16,6 +16,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppViaturasRouteImport } from './routes/app.viaturas'
 import { Route as AppSaidaRouteImport } from './routes/app.saida'
+import { Route as AppRelatoriosRouteImport } from './routes/app.relatorios'
+import { Route as AppMapaRouteImport } from './routes/app.mapa'
 import { Route as AppIncidentesRouteImport } from './routes/app.incidentes'
 import { Route as AppHistoricoRouteImport } from './routes/app.historico'
 import { Route as AppDisponiveisRouteImport } from './routes/app.disponiveis'
@@ -58,6 +60,16 @@ const AppViaturasRoute = AppViaturasRouteImport.update({
 const AppSaidaRoute = AppSaidaRouteImport.update({
   id: '/saida',
   path: '/saida',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRelatoriosRoute = AppRelatoriosRouteImport.update({
+  id: '/relatorios',
+  path: '/relatorios',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMapaRoute = AppMapaRouteImport.update({
+  id: '/mapa',
+  path: '/mapa',
   getParentRoute: () => AppRoute,
 } as any)
 const AppIncidentesRoute = AppIncidentesRouteImport.update({
@@ -111,6 +123,8 @@ export interface FileRoutesByFullPath {
   '/app/disponiveis': typeof AppDisponiveisRoute
   '/app/historico': typeof AppHistoricoRoute
   '/app/incidentes': typeof AppIncidentesRoute
+  '/app/mapa': typeof AppMapaRoute
+  '/app/relatorios': typeof AppRelatoriosRoute
   '/app/saida': typeof AppSaidaRoute
   '/app/viaturas': typeof AppViaturasRoute
   '/app/': typeof AppIndexRoute
@@ -127,6 +141,8 @@ export interface FileRoutesByTo {
   '/app/disponiveis': typeof AppDisponiveisRoute
   '/app/historico': typeof AppHistoricoRoute
   '/app/incidentes': typeof AppIncidentesRoute
+  '/app/mapa': typeof AppMapaRoute
+  '/app/relatorios': typeof AppRelatoriosRoute
   '/app/saida': typeof AppSaidaRoute
   '/app/viaturas': typeof AppViaturasRoute
   '/app': typeof AppIndexRoute
@@ -145,6 +161,8 @@ export interface FileRoutesById {
   '/app/disponiveis': typeof AppDisponiveisRoute
   '/app/historico': typeof AppHistoricoRoute
   '/app/incidentes': typeof AppIncidentesRoute
+  '/app/mapa': typeof AppMapaRoute
+  '/app/relatorios': typeof AppRelatoriosRoute
   '/app/saida': typeof AppSaidaRoute
   '/app/viaturas': typeof AppViaturasRoute
   '/app/': typeof AppIndexRoute
@@ -164,6 +182,8 @@ export interface FileRouteTypes {
     | '/app/disponiveis'
     | '/app/historico'
     | '/app/incidentes'
+    | '/app/mapa'
+    | '/app/relatorios'
     | '/app/saida'
     | '/app/viaturas'
     | '/app/'
@@ -180,6 +200,8 @@ export interface FileRouteTypes {
     | '/app/disponiveis'
     | '/app/historico'
     | '/app/incidentes'
+    | '/app/mapa'
+    | '/app/relatorios'
     | '/app/saida'
     | '/app/viaturas'
     | '/app'
@@ -197,6 +219,8 @@ export interface FileRouteTypes {
     | '/app/disponiveis'
     | '/app/historico'
     | '/app/incidentes'
+    | '/app/mapa'
+    | '/app/relatorios'
     | '/app/saida'
     | '/app/viaturas'
     | '/app/'
@@ -261,6 +285,20 @@ declare module '@tanstack/react-router' {
       path: '/saida'
       fullPath: '/app/saida'
       preLoaderRoute: typeof AppSaidaRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/relatorios': {
+      id: '/app/relatorios'
+      path: '/relatorios'
+      fullPath: '/app/relatorios'
+      preLoaderRoute: typeof AppRelatoriosRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/mapa': {
+      id: '/app/mapa'
+      path: '/mapa'
+      fullPath: '/app/mapa'
+      preLoaderRoute: typeof AppMapaRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/incidentes': {
@@ -328,6 +366,8 @@ interface AppRouteChildren {
   AppDisponiveisRoute: typeof AppDisponiveisRoute
   AppHistoricoRoute: typeof AppHistoricoRoute
   AppIncidentesRoute: typeof AppIncidentesRoute
+  AppMapaRoute: typeof AppMapaRoute
+  AppRelatoriosRoute: typeof AppRelatoriosRoute
   AppSaidaRoute: typeof AppSaidaRoute
   AppViaturasRoute: typeof AppViaturasRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -342,6 +382,8 @@ const AppRouteChildren: AppRouteChildren = {
   AppDisponiveisRoute: AppDisponiveisRoute,
   AppHistoricoRoute: AppHistoricoRoute,
   AppIncidentesRoute: AppIncidentesRoute,
+  AppMapaRoute: AppMapaRoute,
+  AppRelatoriosRoute: AppRelatoriosRoute,
   AppSaidaRoute: AppSaidaRoute,
   AppViaturasRoute: AppViaturasRoute,
   AppIndexRoute: AppIndexRoute,

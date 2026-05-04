@@ -18,6 +18,7 @@ import { Route as AppViaturasRouteImport } from './routes/app.viaturas'
 import { Route as AppSaidaRouteImport } from './routes/app.saida'
 import { Route as AppIncidentesRouteImport } from './routes/app.incidentes'
 import { Route as AppHistoricoRouteImport } from './routes/app.historico'
+import { Route as AppDisponiveisRouteImport } from './routes/app.disponiveis'
 import { Route as AppCondutoresRouteImport } from './routes/app.condutores'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
 import { Route as AppAbastecimentosIndexRouteImport } from './routes/app.abastecimentos.index'
@@ -69,6 +70,11 @@ const AppHistoricoRoute = AppHistoricoRouteImport.update({
   path: '/historico',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDisponiveisRoute = AppDisponiveisRouteImport.update({
+  id: '/disponiveis',
+  path: '/disponiveis',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCondutoresRoute = AppCondutoresRouteImport.update({
   id: '/condutores',
   path: '/condutores',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/app/admin': typeof AppAdminRoute
   '/app/condutores': typeof AppCondutoresRoute
+  '/app/disponiveis': typeof AppDisponiveisRoute
   '/app/historico': typeof AppHistoricoRoute
   '/app/incidentes': typeof AppIncidentesRoute
   '/app/saida': typeof AppSaidaRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/app/admin': typeof AppAdminRoute
   '/app/condutores': typeof AppCondutoresRoute
+  '/app/disponiveis': typeof AppDisponiveisRoute
   '/app/historico': typeof AppHistoricoRoute
   '/app/incidentes': typeof AppIncidentesRoute
   '/app/saida': typeof AppSaidaRoute
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/app/admin': typeof AppAdminRoute
   '/app/condutores': typeof AppCondutoresRoute
+  '/app/disponiveis': typeof AppDisponiveisRoute
   '/app/historico': typeof AppHistoricoRoute
   '/app/incidentes': typeof AppIncidentesRoute
   '/app/saida': typeof AppSaidaRoute
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/app/admin'
     | '/app/condutores'
+    | '/app/disponiveis'
     | '/app/historico'
     | '/app/incidentes'
     | '/app/saida'
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/app/admin'
     | '/app/condutores'
+    | '/app/disponiveis'
     | '/app/historico'
     | '/app/incidentes'
     | '/app/saida'
@@ -183,6 +194,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/app/admin'
     | '/app/condutores'
+    | '/app/disponiveis'
     | '/app/historico'
     | '/app/incidentes'
     | '/app/saida'
@@ -265,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHistoricoRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/disponiveis': {
+      id: '/app/disponiveis'
+      path: '/disponiveis'
+      fullPath: '/app/disponiveis'
+      preLoaderRoute: typeof AppDisponiveisRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/condutores': {
       id: '/app/condutores'
       path: '/condutores'
@@ -306,6 +325,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppCondutoresRoute: typeof AppCondutoresRoute
+  AppDisponiveisRoute: typeof AppDisponiveisRoute
   AppHistoricoRoute: typeof AppHistoricoRoute
   AppIncidentesRoute: typeof AppIncidentesRoute
   AppSaidaRoute: typeof AppSaidaRoute
@@ -319,6 +339,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppCondutoresRoute: AppCondutoresRoute,
+  AppDisponiveisRoute: AppDisponiveisRoute,
   AppHistoricoRoute: AppHistoricoRoute,
   AppIncidentesRoute: AppIncidentesRoute,
   AppSaidaRoute: AppSaidaRoute,

@@ -1,10 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Car, ArrowRight, MapPin, Fuel, Plus, AlertCircle, Clock } from "lucide-react";
+import { Car, Fuel, Plus, Clock, AlertTriangle, ArrowRight, ClipboardList, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { formatDateTime } from "@/lib/format";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth";
 
@@ -12,69 +10,27 @@ export const Route = createFileRoute("/app/")({
   component: Dashboard,
 });
 
-type Viatura = {
-  id: string;
-  modelo: string;
-  cor: string;
-  placa: string | null;
-  ativa: boolean;
-};
-
-type AbertaInfo = {
-  viatura_id: string;
-  data_saida: string;
-  local_saida: string;
-  km_inicial: number;
-  condutores: { nome: string } | null;
-};
-
-type UltimaInfo = {
-  viatura_id: string;
-  data_retorno: string | null;
-  local_estacionamento: string | null;
-  latitude_estacionamento: number | null;
-  longitude_estacionamento: number | null;
-  km_final: number | null;
-};
-
 function Dashboard() {
-  const { aprovado, profileLoaded } = useAuth();
-  const { data, isLoading } = useQuery({
-    queryKey: ["dashboard"],
+  const { aprovado, profileLoaded, isAdmin } = useAuth();
+
+  const { data: stats } = useQuery({
+    queryKey: ["dashboard-stats"],
     queryFn: async () => {
-      const [vRes, abertasRes, ultimasRes] = await Promise.all([
-        supabase.from("viaturas").select("*").eq("ativa", true).order("modelo"),
-        supabase
-          .from("utilizacoes")
-          .select("viatura_id, data_saida, local_saida, km_inicial, condutores(nome)")
-          .is("data_retorno", null),
-        supabase
-          .from("utilizacoes")
-          .select("viatura_id, data_retorno, local_estacionamento, latitude_estacionamento, longitude_estacionamento, km_final")
-          .not("data_retorno", "is", null)
-          .order("data_retorno", { ascending: false })
-          .limit(50),
+      const [vRes, abertasRes] = await Promise.all([
+        supabase.from("viaturas").select("id", { count: "exact", head: true }).eq("ativa", true),
+        supabase.from("utilizacoes").select("id", { count: "exact", head: true }).is("data_retorno", null),
       ]);
-
-      const viaturas = (vRes.data ?? []) as Viatura[];
-      const abertas = (abertasRes.data ?? []) as AbertaInfo[];
-      const ultimas = (ultimasRes.data ?? []) as UltimaInfo[];
-
-      const ultimaPorViatura = new Map<string, UltimaInfo>();
-      for (const u of ultimas) {
-        if (!ultimaPorViatura.has(u.viatura_id)) ultimaPorViatura.set(u.viatura_id, u);
-      }
-      const abertaPorViatura = new Map(abertas.map((a) => [a.viatura_id, a]));
-
-      return { viaturas, abertaPorViatura, ultimaPorViatura };
+      const total = vRes.count ?? 0;
+      const emUso = abertasRes.count ?? 0;
+      return { total, emUso, livres: Math.max(total - emUso, 0) };
     },
   });
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Painel da Frota</h1>
-        <p className="text-sm text-muted-foreground">Selecione uma viatura para registrar saída ou retorno.</p>
+        <p className="text-sm text-muted-foreground">Bem-vindo. Selecione uma ação para começar.</p>
       </div>
 
       {profileLoaded && !aprovado && (
@@ -87,118 +43,107 @@ function Dashboard() {
         </Card>
       )}
 
-      <div className="grid grid-cols-2 gap-3">
-        <Link to="/app/saida">
-          <Card className="p-4 bg-gradient-primary text-primary-foreground border-0 shadow-elegant hover:scale-[1.02] transition-transform">
-            <Plus className="h-6 w-6 mb-2" />
-            <div className="font-semibold">Nova Saída</div>
-            <div className="text-xs opacity-80">Registrar utilização</div>
-          </Card>
-        </Link>
-        <Link to="/app/abastecimentos/novo">
-          <Card className="p-4 bg-gradient-accent text-accent-foreground border-0 shadow-elegant hover:scale-[1.02] transition-transform">
-            <Fuel className="h-6 w-6 mb-2" />
-            <div className="font-semibold">Abastecer</div>
-            <div className="text-xs opacity-80">Registrar abastecimento</div>
-          </Card>
-        </Link>
+      {/* Snapshot da frota */}
+      <div className="grid grid-cols-3 gap-2">
+        <Card className="p-3 text-center shadow-card">
+          <div className="text-2xl font-bold text-primary">{stats?.total ?? "—"}</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Frota ativa</div>
+        </Card>
+        <Card className="p-3 text-center shadow-card">
+          <div className="text-2xl font-bold text-success">{stats?.livres ?? "—"}</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Disponíveis</div>
+        </Card>
+        <Card className="p-3 text-center shadow-card">
+          <div className="text-2xl font-bold text-warning-foreground">{stats?.emUso ?? "—"}</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Em uso</div>
+        </Card>
       </div>
 
+      {/* Botão principal — Viaturas disponíveis */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+        <Link to="/app/disponiveis">
+          <Card className="relative overflow-hidden border-0 shadow-elegant bg-gradient-hero text-sidebar-foreground p-5 group">
+            <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-accent/15 blur-2xl" />
+            <div className="absolute -right-2 -bottom-8 h-24 w-24 rounded-full bg-primary-foreground/5 blur-xl" />
+            <div className="relative flex items-center gap-4">
+              <div className="h-14 w-14 rounded-2xl bg-accent/20 border border-accent/40 flex items-center justify-center shrink-0">
+                <Car className="h-7 w-7 text-accent" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] uppercase tracking-[0.2em] text-sidebar-foreground/70">Frota</div>
+                <div className="font-display font-bold text-xl leading-tight">Viaturas Disponíveis</div>
+                <div className="text-xs text-sidebar-foreground/80 mt-0.5">Veja status, registre saída e retorno</div>
+              </div>
+              <ArrowRight className="h-5 w-5 text-accent transition-transform group-hover:translate-x-1" />
+            </div>
+          </Card>
+        </Link>
+      </motion.div>
+
+      {/* Ações primárias */}
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="font-display font-semibold text-lg">Viaturas</h2>
-          <Link to="/app/viaturas" className="text-xs text-primary font-medium">Gerenciar</Link>
+        <div className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-2">Ações rápidas</div>
+        <div className="grid grid-cols-2 gap-3">
+          <ActionTile to="/app/saida" icon={Plus} label="Nova Saída" desc="Registrar utilização" tone="primary" />
+          <ActionTile to="/app/abastecimentos/novo" icon={Fuel} label="Abastecer" desc="Novo abastecimento" tone="accent" />
+          <ActionTile to="/app/incidentes" icon={AlertTriangle} label="Incidentes" desc="Registrar ocorrências" tone="destructive" />
+          <ActionTile to="/app/historico" icon={ClipboardList} label="Histórico" desc="Utilizações anteriores" tone="neutral" />
         </div>
-
-        {isLoading ? (
-          <div className="space-y-3">
-            {[0, 1, 2, 3].map((i) => (
-              <Card key={i} className="p-4 h-28 animate-pulse bg-muted" />
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {data?.viaturas.map((v, idx) => {
-              const aberta = data.abertaPorViatura.get(v.id);
-              const ultima = data.ultimaPorViatura.get(v.id);
-              return (
-                <motion.div
-                  key={v.id}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                >
-                  <Card className="p-4 shadow-card overflow-hidden">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex gap-3 min-w-0 flex-1">
-                        <div className="h-11 w-11 shrink-0 rounded-xl bg-secondary flex items-center justify-center">
-                          <Car className="h-5 w-5 text-primary" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="font-semibold truncate">{v.modelo}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {v.cor}{v.placa ? ` · ${v.placa}` : ""}
-                          </div>
-                        </div>
-                      </div>
-                      {aberta ? (
-                        <span className="shrink-0 rounded-full bg-warning/15 text-warning-foreground border border-warning/40 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
-                          Em uso
-                        </span>
-                      ) : (
-                        <span className="shrink-0 rounded-full bg-success/15 text-success border border-success/30 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
-                          Disponível
-                        </span>
-                      )}
-                    </div>
-
-                    {aberta ? (
-                      <div className="mt-3 rounded-lg bg-warning/10 p-3 text-xs space-y-1">
-                        <div className="flex items-center gap-1.5"><AlertCircle className="h-3.5 w-3.5"/> Saiu em {formatDateTime(aberta.data_saida)}</div>
-                        <div>Condutor: <span className="font-semibold">{aberta.condutores?.nome ?? "—"}</span></div>
-                        <div>KM inicial: {aberta.km_inicial.toLocaleString("pt-BR")}</div>
-                        <div className="flex items-start gap-1.5"><MapPin className="h-3.5 w-3.5 mt-0.5"/> {aberta.local_saida}</div>
-                      </div>
-                    ) : ultima ? (
-                      <div className="mt-3 rounded-lg bg-secondary/60 p-3 text-xs space-y-1">
-                        <div className="flex items-start gap-1.5">
-                          <MapPin className="h-3.5 w-3.5 mt-0.5 text-primary"/>
-                          <span>{ultima.local_estacionamento ?? "Local não informado"}</span>
-                        </div>
-                        {ultima.latitude_estacionamento != null && (
-                          <a
-                            href={`https://www.google.com/maps?q=${ultima.latitude_estacionamento},${ultima.longitude_estacionamento}`}
-                            target="_blank" rel="noreferrer"
-                            className="text-primary font-medium underline-offset-2 hover:underline"
-                          >Ver no mapa</a>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="mt-3 text-xs text-muted-foreground">Sem registros ainda.</div>
-                    )}
-
-                    <div className="mt-3 flex gap-2">
-                      {aberta ? (
-                        <Link to="/app/retorno/$viaturaId" params={{ viaturaId: v.id }} className="flex-1">
-                          <Button className="w-full bg-gradient-primary" size="sm">
-                            Registrar retorno <ArrowRight className="h-4 w-4 ml-1"/>
-                          </Button>
-                        </Link>
-                      ) : (
-                        <Link to="/app/saida" search={{ viaturaId: v.id }} className="flex-1">
-                          <Button variant="outline" size="sm" className="w-full">
-                            Registrar saída
-                          </Button>
-                        </Link>
-                      )}
-                    </div>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
-        )}
       </div>
+
+      {/* Admin */}
+      {isAdmin && (
+        <div>
+          <div className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-2">Administração</div>
+          <Link to="/app/admin">
+            <Card className="p-4 flex items-center gap-3 shadow-card hover:shadow-elegant transition-shadow">
+              <div className="h-11 w-11 rounded-xl bg-accent/15 border border-accent/30 flex items-center justify-center">
+                <ShieldCheck className="h-5 w-5 text-accent" />
+              </div>
+              <div className="flex-1">
+                <div className="font-semibold">Painel Administrativo</div>
+                <div className="text-xs text-muted-foreground">Usuários, papéis e auditoria</div>
+              </div>
+              <ArrowRight className="h-4 w-4 text-muted-foreground" />
+            </Card>
+          </Link>
+        </div>
+      )}
     </div>
+  );
+}
+
+function ActionTile({
+  to, icon: Icon, label, desc, tone,
+}: {
+  to: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  desc: string;
+  tone: "primary" | "accent" | "destructive" | "neutral";
+}) {
+  const styles = {
+    primary: "bg-gradient-primary text-primary-foreground border-0",
+    accent: "bg-gradient-accent text-accent-foreground border-0",
+    destructive: "bg-card border-destructive/30 text-foreground",
+    neutral: "bg-card border-border text-foreground",
+  }[tone];
+  const iconWrap = {
+    primary: "bg-primary-foreground/15 text-primary-foreground",
+    accent: "bg-accent-foreground/15 text-accent-foreground",
+    destructive: "bg-destructive/10 text-destructive",
+    neutral: "bg-secondary text-primary",
+  }[tone];
+
+  return (
+    <Link to={to as any}>
+      <Card className={`p-4 h-full shadow-card hover:shadow-elegant transition-all hover:-translate-y-0.5 ${styles}`}>
+        <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-3 ${iconWrap}`}>
+          <Icon className="h-5 w-5" />
+        </div>
+        <div className="font-semibold text-sm">{label}</div>
+        <div className="text-[11px] opacity-80">{desc}</div>
+      </Card>
+    </Link>
   );
 }

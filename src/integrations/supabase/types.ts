@@ -97,22 +97,70 @@ export type Database = {
       }
       condutores: {
         Row: {
+          cnh_categoria: string | null
+          cnh_numero: string | null
+          cnh_validade: string | null
           cpf: string
           created_at: string
           id: string
           nome: string
+          telefone: string | null
         }
         Insert: {
+          cnh_categoria?: string | null
+          cnh_numero?: string | null
+          cnh_validade?: string | null
           cpf: string
           created_at?: string
           id?: string
           nome: string
+          telefone?: string | null
         }
         Update: {
+          cnh_categoria?: string | null
+          cnh_numero?: string | null
+          cnh_validade?: string | null
           cpf?: string
           created_at?: string
           id?: string
           nome?: string
+          telefone?: string | null
+        }
+        Relationships: []
+      }
+      documentos_viatura: {
+        Row: {
+          arquivo_url: string | null
+          created_at: string
+          id: string
+          numero: string | null
+          observacao: string | null
+          registrado_por: string | null
+          tipo: string
+          validade: string | null
+          viatura_id: string
+        }
+        Insert: {
+          arquivo_url?: string | null
+          created_at?: string
+          id?: string
+          numero?: string | null
+          observacao?: string | null
+          registrado_por?: string | null
+          tipo: string
+          validade?: string | null
+          viatura_id: string
+        }
+        Update: {
+          arquivo_url?: string | null
+          created_at?: string
+          id?: string
+          numero?: string | null
+          observacao?: string | null
+          registrado_por?: string | null
+          tipo?: string
+          validade?: string | null
+          viatura_id?: string
         }
         Relationships: []
       }
@@ -190,6 +238,48 @@ export type Database = {
           proxima_km?: number | null
           registrado_por?: string | null
           tipo?: string
+          viatura_id?: string
+        }
+        Relationships: []
+      }
+      multas: {
+        Row: {
+          condutor_id: string | null
+          created_at: string
+          data_infracao: string
+          descricao: string
+          id: string
+          local: string | null
+          observacao: string | null
+          registrado_por: string | null
+          situacao: string
+          valor: number
+          viatura_id: string
+        }
+        Insert: {
+          condutor_id?: string | null
+          created_at?: string
+          data_infracao: string
+          descricao: string
+          id?: string
+          local?: string | null
+          observacao?: string | null
+          registrado_por?: string | null
+          situacao?: string
+          valor?: number
+          viatura_id: string
+        }
+        Update: {
+          condutor_id?: string | null
+          created_at?: string
+          data_infracao?: string
+          descricao?: string
+          id?: string
+          local?: string | null
+          observacao?: string | null
+          registrado_por?: string | null
+          situacao?: string
+          valor?: number
           viatura_id?: string
         }
         Relationships: []

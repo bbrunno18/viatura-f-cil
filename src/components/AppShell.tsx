@@ -1,5 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, LogOut, AlertTriangle, Fuel, Users, Shield } from "lucide-react";
+import { Home, LogOut, AlertTriangle, Fuel, Users, Settings, Sun, Moon } from "lucide-react";
+import { usePreferences } from "@/lib/preferences";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -14,6 +15,8 @@ const navItems = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, isAdmin, isMaster, signOut } = useAuth();
+  const { theme, setTheme } = usePreferences();
+  const isDark = theme === "dark" || (theme === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches);
   const roleLabel = isMaster ? "Administrador Master" : isAdmin ? "Administrador" : "Condutor";
   const roleClass = isMaster
     ? "bg-accent/30 border-accent/60 text-accent"
@@ -41,7 +44,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
             </div>
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {isAdmin && (
               <Link
                 to="/app/admin"
@@ -50,6 +53,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 ADMIN
               </Link>
             )}
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => setTheme(isDark ? "light" : "dark")}
+              className="text-sidebar-foreground hover:bg-sidebar-accent"
+              aria-label="Alternar tema"
+            >
+              {isDark ? <Sun className="h-5 w-5"/> : <Moon className="h-5 w-5"/>}
+            </Button>
+            <Link to="/app/preferencias" aria-label="Preferências">
+              <Button size="icon" variant="ghost" className="text-sidebar-foreground hover:bg-sidebar-accent">
+                <Settings className="h-5 w-5" />
+              </Button>
+            </Link>
             <Button
               size="icon"
               variant="ghost"

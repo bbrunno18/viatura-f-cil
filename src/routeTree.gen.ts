@@ -18,11 +18,15 @@ import { Route as AppViaturasRouteImport } from './routes/app.viaturas'
 import { Route as AppSaidaRouteImport } from './routes/app.saida'
 import { Route as AppReservasRouteImport } from './routes/app.reservas'
 import { Route as AppRelatoriosRouteImport } from './routes/app.relatorios'
+import { Route as AppPreferenciasRouteImport } from './routes/app.preferencias'
+import { Route as AppMultasRouteImport } from './routes/app.multas'
 import { Route as AppMapaRouteImport } from './routes/app.mapa'
 import { Route as AppManutencaoRouteImport } from './routes/app.manutencao'
 import { Route as AppIncidentesRouteImport } from './routes/app.incidentes'
 import { Route as AppHistoricoRouteImport } from './routes/app.historico'
+import { Route as AppDocumentosRouteImport } from './routes/app.documentos'
 import { Route as AppDisponiveisRouteImport } from './routes/app.disponiveis'
+import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
 import { Route as AppCondutoresRouteImport } from './routes/app.condutores'
 import { Route as AppAuditoriaRouteImport } from './routes/app.auditoria'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
@@ -75,6 +79,16 @@ const AppRelatoriosRoute = AppRelatoriosRouteImport.update({
   path: '/relatorios',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPreferenciasRoute = AppPreferenciasRouteImport.update({
+  id: '/preferencias',
+  path: '/preferencias',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMultasRoute = AppMultasRouteImport.update({
+  id: '/multas',
+  path: '/multas',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppMapaRoute = AppMapaRouteImport.update({
   id: '/mapa',
   path: '/mapa',
@@ -95,9 +109,19 @@ const AppHistoricoRoute = AppHistoricoRouteImport.update({
   path: '/historico',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDocumentosRoute = AppDocumentosRouteImport.update({
+  id: '/documentos',
+  path: '/documentos',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDisponiveisRoute = AppDisponiveisRouteImport.update({
   id: '/disponiveis',
   path: '/disponiveis',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AppRoute,
 } as any)
 const AppCondutoresRoute = AppCondutoresRouteImport.update({
@@ -139,11 +163,15 @@ export interface FileRoutesByFullPath {
   '/app/admin': typeof AppAdminRoute
   '/app/auditoria': typeof AppAuditoriaRoute
   '/app/condutores': typeof AppCondutoresRoute
+  '/app/dashboard': typeof AppDashboardRoute
   '/app/disponiveis': typeof AppDisponiveisRoute
+  '/app/documentos': typeof AppDocumentosRoute
   '/app/historico': typeof AppHistoricoRoute
   '/app/incidentes': typeof AppIncidentesRoute
   '/app/manutencao': typeof AppManutencaoRoute
   '/app/mapa': typeof AppMapaRoute
+  '/app/multas': typeof AppMultasRoute
+  '/app/preferencias': typeof AppPreferenciasRoute
   '/app/relatorios': typeof AppRelatoriosRoute
   '/app/reservas': typeof AppReservasRoute
   '/app/saida': typeof AppSaidaRoute
@@ -160,11 +188,15 @@ export interface FileRoutesByTo {
   '/app/admin': typeof AppAdminRoute
   '/app/auditoria': typeof AppAuditoriaRoute
   '/app/condutores': typeof AppCondutoresRoute
+  '/app/dashboard': typeof AppDashboardRoute
   '/app/disponiveis': typeof AppDisponiveisRoute
+  '/app/documentos': typeof AppDocumentosRoute
   '/app/historico': typeof AppHistoricoRoute
   '/app/incidentes': typeof AppIncidentesRoute
   '/app/manutencao': typeof AppManutencaoRoute
   '/app/mapa': typeof AppMapaRoute
+  '/app/multas': typeof AppMultasRoute
+  '/app/preferencias': typeof AppPreferenciasRoute
   '/app/relatorios': typeof AppRelatoriosRoute
   '/app/reservas': typeof AppReservasRoute
   '/app/saida': typeof AppSaidaRoute
@@ -183,11 +215,15 @@ export interface FileRoutesById {
   '/app/admin': typeof AppAdminRoute
   '/app/auditoria': typeof AppAuditoriaRoute
   '/app/condutores': typeof AppCondutoresRoute
+  '/app/dashboard': typeof AppDashboardRoute
   '/app/disponiveis': typeof AppDisponiveisRoute
+  '/app/documentos': typeof AppDocumentosRoute
   '/app/historico': typeof AppHistoricoRoute
   '/app/incidentes': typeof AppIncidentesRoute
   '/app/manutencao': typeof AppManutencaoRoute
   '/app/mapa': typeof AppMapaRoute
+  '/app/multas': typeof AppMultasRoute
+  '/app/preferencias': typeof AppPreferenciasRoute
   '/app/relatorios': typeof AppRelatoriosRoute
   '/app/reservas': typeof AppReservasRoute
   '/app/saida': typeof AppSaidaRoute
@@ -207,11 +243,15 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/auditoria'
     | '/app/condutores'
+    | '/app/dashboard'
     | '/app/disponiveis'
+    | '/app/documentos'
     | '/app/historico'
     | '/app/incidentes'
     | '/app/manutencao'
     | '/app/mapa'
+    | '/app/multas'
+    | '/app/preferencias'
     | '/app/relatorios'
     | '/app/reservas'
     | '/app/saida'
@@ -228,11 +268,15 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/auditoria'
     | '/app/condutores'
+    | '/app/dashboard'
     | '/app/disponiveis'
+    | '/app/documentos'
     | '/app/historico'
     | '/app/incidentes'
     | '/app/manutencao'
     | '/app/mapa'
+    | '/app/multas'
+    | '/app/preferencias'
     | '/app/relatorios'
     | '/app/reservas'
     | '/app/saida'
@@ -250,11 +294,15 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/auditoria'
     | '/app/condutores'
+    | '/app/dashboard'
     | '/app/disponiveis'
+    | '/app/documentos'
     | '/app/historico'
     | '/app/incidentes'
     | '/app/manutencao'
     | '/app/mapa'
+    | '/app/multas'
+    | '/app/preferencias'
     | '/app/relatorios'
     | '/app/reservas'
     | '/app/saida'
@@ -337,6 +385,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRelatoriosRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/preferencias': {
+      id: '/app/preferencias'
+      path: '/preferencias'
+      fullPath: '/app/preferencias'
+      preLoaderRoute: typeof AppPreferenciasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/multas': {
+      id: '/app/multas'
+      path: '/multas'
+      fullPath: '/app/multas'
+      preLoaderRoute: typeof AppMultasRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/mapa': {
       id: '/app/mapa'
       path: '/mapa'
@@ -365,11 +427,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHistoricoRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/documentos': {
+      id: '/app/documentos'
+      path: '/documentos'
+      fullPath: '/app/documentos'
+      preLoaderRoute: typeof AppDocumentosRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/disponiveis': {
       id: '/app/disponiveis'
       path: '/disponiveis'
       fullPath: '/app/disponiveis'
       preLoaderRoute: typeof AppDisponiveisRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/dashboard': {
+      id: '/app/dashboard'
+      path: '/dashboard'
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/condutores': {
@@ -421,11 +497,15 @@ interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppAuditoriaRoute: typeof AppAuditoriaRoute
   AppCondutoresRoute: typeof AppCondutoresRoute
+  AppDashboardRoute: typeof AppDashboardRoute
   AppDisponiveisRoute: typeof AppDisponiveisRoute
+  AppDocumentosRoute: typeof AppDocumentosRoute
   AppHistoricoRoute: typeof AppHistoricoRoute
   AppIncidentesRoute: typeof AppIncidentesRoute
   AppManutencaoRoute: typeof AppManutencaoRoute
   AppMapaRoute: typeof AppMapaRoute
+  AppMultasRoute: typeof AppMultasRoute
+  AppPreferenciasRoute: typeof AppPreferenciasRoute
   AppRelatoriosRoute: typeof AppRelatoriosRoute
   AppReservasRoute: typeof AppReservasRoute
   AppSaidaRoute: typeof AppSaidaRoute
@@ -440,11 +520,15 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppAuditoriaRoute: AppAuditoriaRoute,
   AppCondutoresRoute: AppCondutoresRoute,
+  AppDashboardRoute: AppDashboardRoute,
   AppDisponiveisRoute: AppDisponiveisRoute,
+  AppDocumentosRoute: AppDocumentosRoute,
   AppHistoricoRoute: AppHistoricoRoute,
   AppIncidentesRoute: AppIncidentesRoute,
   AppManutencaoRoute: AppManutencaoRoute,
   AppMapaRoute: AppMapaRoute,
+  AppMultasRoute: AppMultasRoute,
+  AppPreferenciasRoute: AppPreferenciasRoute,
   AppRelatoriosRoute: AppRelatoriosRoute,
   AppReservasRoute: AppReservasRoute,
   AppSaidaRoute: AppSaidaRoute,

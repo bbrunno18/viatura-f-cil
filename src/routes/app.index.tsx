@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   Car, Fuel, Plus, Clock, AlertTriangle, ArrowRight, ClipboardList,
-  ShieldCheck, Map, CalendarClock, Wrench, BarChart3, Activity,
+  ShieldCheck, Map, CalendarClock, Wrench, BarChart3, Activity, FileWarning, FileText,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -105,6 +105,8 @@ function Dashboard() {
           <ActionTile to="/app/relatorios" icon={BarChart3} label="Relatórios" desc="Gráficos e exportação" tone="accent" />
           <ActionTile to="/app/historico" icon={ClipboardList} label="Histórico" desc="Utilizações anteriores" tone="neutral" />
           <ActionTile to="/app/manutencao" icon={Wrench} label="Manutenção" desc="Revisões e vencimentos" tone="neutral" />
+          <ActionTile to="/app/documentos" icon={FileText} label="Documentos" desc="CRLV, seguro, IPVA" tone="neutral" />
+          <ActionTile to="/app/multas" icon={FileWarning} label="Multas" desc="Infrações registradas" tone="destructive" />
         </div>
       </Section>
 
@@ -125,18 +127,32 @@ function Dashboard() {
               </Card>
             </Link>
             {isMaster && (
-              <Link to="/app/auditoria">
-                <Card className="p-4 flex items-center gap-3 shadow-card hover:shadow-elegant transition-all hover:-translate-y-0.5">
-                  <div className="h-11 w-11 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center">
-                    <Activity className="h-5 w-5 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-semibold">Auditoria</div>
-                    <div className="text-xs text-muted-foreground">Log de ações dos usuários</div>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                </Card>
-              </Link>
+              <>
+                <Link to="/app/dashboard">
+                  <Card className="p-4 flex items-center gap-3 shadow-card hover:shadow-elegant transition-all hover:-translate-y-0.5 bg-gradient-hero text-sidebar-foreground border-0">
+                    <div className="h-11 w-11 rounded-xl bg-accent/20 border border-accent/40 flex items-center justify-center">
+                      <BarChart3 className="h-5 w-5 text-accent" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold">Dashboard Executivo</div>
+                      <div className="text-xs text-sidebar-foreground/80">KPIs, gráficos e custos consolidados</div>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-sidebar-foreground/70" />
+                  </Card>
+                </Link>
+                <Link to="/app/auditoria">
+                  <Card className="p-4 flex items-center gap-3 shadow-card hover:shadow-elegant transition-all hover:-translate-y-0.5">
+                    <div className="h-11 w-11 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center">
+                      <Activity className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold">Auditoria</div>
+                      <div className="text-xs text-muted-foreground">Log de ações dos usuários</div>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                  </Card>
+                </Link>
+              </>
             )}
           </div>
         </Section>

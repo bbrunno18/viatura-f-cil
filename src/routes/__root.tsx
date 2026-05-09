@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/lib/auth";
+import { PreferencesProvider } from "@/lib/preferences";
 
 import appCss from "../styles.css?url";
 
@@ -68,12 +69,14 @@ function RootComponent() {
   const [qc] = useState(() => new QueryClient());
   return (
     <QueryClientProvider client={qc}>
-      <AuthProvider>
-        <TooltipProvider>
-          <Outlet />
-          <Toaster richColors position="top-center" />
-        </TooltipProvider>
-      </AuthProvider>
+      <PreferencesProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <Outlet />
+            <Toaster richColors position="top-center" />
+          </TooltipProvider>
+        </AuthProvider>
+      </PreferencesProvider>
     </QueryClientProvider>
   );
 }

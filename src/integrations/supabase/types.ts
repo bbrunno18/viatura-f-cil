@@ -371,10 +371,17 @@ export type Database = {
       utilizacoes: {
         Row: {
           assinatura_retorno: string | null
+          assinatura_saida: string | null
+          checklist_retorno: Json | null
+          checklist_saida: Json | null
           condutor_id: string
           created_at: string
           data_retorno: string | null
           data_saida: string
+          foto_hodometro_retorno: string | null
+          foto_hodometro_saida: string | null
+          fotos_retorno: string[]
+          fotos_saida: string[]
           id: string
           km_final: number | null
           km_inicial: number
@@ -383,14 +390,22 @@ export type Database = {
           local_saida: string
           longitude_estacionamento: number | null
           registrado_por: string | null
+          termo_url: string | null
           viatura_id: string
         }
         Insert: {
           assinatura_retorno?: string | null
+          assinatura_saida?: string | null
+          checklist_retorno?: Json | null
+          checklist_saida?: Json | null
           condutor_id: string
           created_at?: string
           data_retorno?: string | null
           data_saida: string
+          foto_hodometro_retorno?: string | null
+          foto_hodometro_saida?: string | null
+          fotos_retorno?: string[]
+          fotos_saida?: string[]
           id?: string
           km_final?: number | null
           km_inicial: number
@@ -399,14 +414,22 @@ export type Database = {
           local_saida: string
           longitude_estacionamento?: number | null
           registrado_por?: string | null
+          termo_url?: string | null
           viatura_id: string
         }
         Update: {
           assinatura_retorno?: string | null
+          assinatura_saida?: string | null
+          checklist_retorno?: Json | null
+          checklist_saida?: Json | null
           condutor_id?: string
           created_at?: string
           data_retorno?: string | null
           data_saida?: string
+          foto_hodometro_retorno?: string | null
+          foto_hodometro_saida?: string | null
+          fotos_retorno?: string[]
+          fotos_saida?: string[]
           id?: string
           km_final?: number | null
           km_inicial?: number
@@ -415,6 +438,7 @@ export type Database = {
           local_saida?: string
           longitude_estacionamento?: number | null
           registrado_por?: string | null
+          termo_url?: string | null
           viatura_id?: string
         }
         Relationships: [

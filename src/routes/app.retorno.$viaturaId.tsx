@@ -11,6 +11,9 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { GpsCapture, type Coords } from "@/components/GpsCapture";
 import { SignaturePad } from "@/components/SignaturePad";
+import { ChecklistForm, buildEmptyChecklist, type ChecklistItem } from "@/components/ChecklistForm";
+import { PhotoUpload } from "@/components/PhotoUpload";
+import { PhotosUpload } from "@/components/PhotosUpload";
 import { formatDateTime } from "@/lib/format";
 
 export const Route = createFileRoute("/app/retorno/$viaturaId")({
@@ -27,6 +30,9 @@ function Retorno() {
   const [local, setLocal] = useState("");
   const [coords, setCoords] = useState<Coords>(null);
   const [assinatura, setAssinatura] = useState<string | null>(null);
+  const [checklist, setChecklist] = useState<ChecklistItem[]>(buildEmptyChecklist());
+  const [fotoHodometro, setFotoHodometro] = useState<string | null>(null);
+  const [fotos, setFotos] = useState<string[]>([]);
 
   const { data: aberta, isLoading } = useQuery({
     queryKey: ["aberta", viaturaId],
@@ -47,6 +53,7 @@ function Retorno() {
     if (!aberta) return;
     if (!aprovado) return toast.error("Sua conta precisa ser aprovada pelo administrador.");
     if (!km || !data) return toast.error("Preencha KM e data");
+    if (!fotoHodometro) return toast.error("Foto do hodômetro é obrigatória");
     if (!assinatura) return toast.error("A assinatura do condutor é obrigatória");
     const kmNum = parseInt(km, 10);
     if (kmNum < aberta.km_inicial) return toast.error(`KM final deve ser ≥ ${aberta.km_inicial}`);
@@ -60,21 +67,24 @@ function Retorno() {
         latitude_estacionamento: coords?.lat ?? null,
         longitude_estacionamento: coords?.lng ?? null,
         assinatura_retorno: assinatura,
+        checklist_retorno: checklist as never,
+        foto_hodometro_retorno: fotoHodometro,
+        fotos_retorno: fotos,
       })
       .eq("id", aberta.id);
     setBusy(false);
     if (error) return toast.error(error.message);
-    toast.success("Retorno registrado com assinatura");
+    toast.success("Retorno registrado com checklist e assinatura");
     navigate({ to: "/app" });
   }
 
   if (isLoading) {
-    return <div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin text-primary"/></div>;
+    return <div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
   }
   if (!aberta) {
     return (
       <div className="space-y-4">
-        <Link to="/app" className="inline-flex items-center text-sm text-muted-foreground"><ChevronLeft className="h-4 w-4"/>Voltar</Link>
+        <Link to="/app" className="inline-flex items-center text-sm text-muted-foreground"><ChevronLeft className="h-4 w-4" />Voltar</Link>
         <Card className="p-5 text-center text-muted-foreground">Não há saída em aberto para esta viatura.</Card>
       </div>
     );
@@ -83,7 +93,7 @@ function Retorno() {
   return (
     <div className="space-y-5">
       <Link to="/app" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
-        <ChevronLeft className="h-4 w-4"/> Voltar
+        <ChevronLeft className="h-4 w-4" /> Voltar
       </Link>
       <h1 className="text-2xl font-bold">Retorno da Viatura</h1>
 
@@ -96,7 +106,7 @@ function Retorno() {
       </Card>
 
       <Card className="p-5 shadow-card">
-        <form onSubmit={submit} className="space-y-4">
+        <form onSubmit={submit} className="space-y-5">
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label>Data e hora</Label>
@@ -108,6 +118,14 @@ function Retorno() {
             </div>
           </div>
 
+          <PhotoUpload
+            value={fotoHodometro}
+            onChange={setFotoHodometro}
+            folder="hodometro/retorno"
+            label="Foto do hodômetro (final)"
+            required
+          />
+
           <GpsCapture
             value={coords}
             onChange={setCoords}
@@ -115,14 +133,20 @@ function Retorno() {
             onLocalChange={setLocal}
           />
 
-          <SignaturePad
-            value={assinatura}
-            onChange={setAssinatura}
-            label="Assinatura do condutor"
+          <PhotosUpload
+            values={fotos}
+            onChange={setFotos}
+            folder="veiculo/retorno"
+            label="Fotos do veículo no retorno (opcional)"
+            max={6}
           />
 
+          <ChecklistForm items={checklist} onChange={setChecklist} title="Checklist de retorno" />
+
+          <SignaturePad value={assinatura} onChange={setAssinatura} label="Assinatura do condutor" />
+
           <Button type="submit" className="w-full h-11 bg-gradient-primary" disabled={busy}>
-            {busy ? <Loader2 className="h-4 w-4 animate-spin"/> : "Confirmar retorno"}
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirmar retorno"}
           </Button>
         </form>
       </Card>

@@ -90,8 +90,9 @@ function NovaSaida() {
 
     // Generate termo
     try {
-      const viatura = lists!.viaturas.find((v: any) => v.id === vid);
-      const condutor = lists!.condutores.find((c: any) => c.id === cid);
+      const viatura = lists?.viaturas.find((v: any) => v.id === vid) as any;
+      const condutor = lists?.condutores.find((c: any) => c.id === cid) as any;
+      if (!viatura || !condutor) throw new Error("Dados de viatura/condutor não encontrados");
       const termoUrl = await gerarEArmazenarTermo({
         utilizacaoId: inserted.id,
         viatura: { modelo: viatura.modelo, cor: viatura.cor, placa: viatura.placa },

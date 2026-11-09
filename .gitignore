@@ -32,3 +32,6 @@ dist-ssr
 *.sw?
 .env
 *.env
+
+# Saída de build da Vercel
+.vercel

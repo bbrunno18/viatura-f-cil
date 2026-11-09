@@ -141,10 +141,13 @@ SUPABASE_PROJECT_ID="ecdwhafgltsfikfumyto"
 
 ---
 
-## 7. Ajustes Pendentes Prioritários
-1. **Hodômetro Opcional:**
-   * Em `src/routes/app.saida.tsx` e `src/routes/app.retorno.$viaturaId.tsx`, remover a validação de obrigatoriedade de envio da foto do hodômetro e atualizar os rótulos para "Foto do hodômetro (opcional)".
-2. **Ambiente Limpo para Produção:**
-   * Limpar registros das tabelas operacionais (`utilizacoes`, `abastecimentos`, `incidentes`, `multas`, `reservas`, `audit_log`), mantendo as 4 viaturas e o usuário Master cadastrados para início da operação real.
-3. **Gestão de Viaturas:**
-   * Alinhar a interface de cadastro de viaturas (`src/routes/app.viaturas.tsx`) com as colunas reais da tabela `viaturas`.
+## 7. Ajustes Prioritários
+1. **Hodômetro Opcional:** FEITO. A foto do hodômetro é opcional na saída e no retorno. O KM inicial (saída) e o KM final (retorno) são digitados pelo usuário; o KM final não pode ser menor que o inicial.
+2. **Gestão de Viaturas:** FEITO. `app.viaturas.tsx`, `hooks/useViaturas.ts` e `validators/viatura.ts` usam as colunas reais de `viaturas` (`id`, `modelo`, `cor`, `placa`, `ativa`, `km_atual`, `created_at`). O botão "Adicionar viatura" aparece só para admin/master.
+3. **Permissões das funções RLS (aplicar no banco):** a migração `20261109200000_grant_execute_funcoes_rls.sql` concede EXECUTE de `is_admin_or_master`, `is_approved` e `has_role` ao papel `authenticated`. Sem isso as políticas falham com "permission denied for function ...".
+4. **Ambiente Limpo para Produção (PENDENTE, destrutivo):** limpar `utilizacoes`, `abastecimentos`, `incidentes`, `multas`, `reservas` e `audit_log`, mantendo as viaturas e o usuário Master. Há um script de apoio em `supabase/manual/liberar_viatura_e_permissoes.sql` (permissões + remoção das saídas abertas de exemplo). Não colocar scripts que apagam dados em `supabase/migrations`.
+
+## 8. Convenções de código
+* Datas e horas de formulário: usar `nowLocalInput()` e `todayLocal()` de `src/lib/format.ts`. Nunca `toISOString().slice(...)` para valor padrão de campo, porque devolve UTC (3 h à frente em Brasília).
+* KM e valores numéricos: validar com `parseKm()` e `parsePositiveDecimal()` antes de gravar.
+* Dependências: manter `@tanstack/react-start` em `~1.168.x` enquanto o projeto usar Vite 7 (a 1.169.x exige Vite 8). Não usar versões com falha de segurança conhecida (a Vercel bloqueia o deploy).

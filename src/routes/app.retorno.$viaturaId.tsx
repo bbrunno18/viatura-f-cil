@@ -14,7 +14,7 @@ import { SignaturePad } from "@/components/SignaturePad";
 import { ChecklistForm, buildEmptyChecklist, type ChecklistItem } from "@/components/ChecklistForm";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { PhotosUpload } from "@/components/PhotosUpload";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime, nowLocalInput, parseKm } from "@/lib/format";
 
 export const Route = createFileRoute("/app/retorno/$viaturaId")({
   component: Retorno,
@@ -25,7 +25,7 @@ function Retorno() {
   const navigate = useNavigate();
   const { aprovado } = useAuth();
   const [busy, setBusy] = useState(false);
-  const [data, setData] = useState(() => new Date().toISOString().slice(0, 16));
+  const [data, setData] = useState(() => nowLocalInput());
   const [km, setKm] = useState("");
   const [local, setLocal] = useState("");
   const [coords, setCoords] = useState<Coords>(null);
@@ -54,7 +54,8 @@ function Retorno() {
     if (!aprovado) return toast.error("Sua conta precisa ser aprovada pelo administrador.");
     if (!km || !data) return toast.error("Preencha KM e data");
     if (!assinatura) return toast.error("A assinatura do condutor é obrigatória");
-    const kmNum = parseInt(km, 10);
+    const kmNum = parseKm(km);
+    if (kmNum === null) return toast.error("Informe o KM final com números inteiros (sem negativo).");
     if (kmNum < aberta.km_inicial) return toast.error(`KM final deve ser ≥ ${aberta.km_inicial}`);
     setBusy(true);
     const { error } = await supabase
@@ -113,7 +114,7 @@ function Retorno() {
             </div>
             <div>
               <Label>KM final</Label>
-              <Input type="number" inputMode="numeric" value={km} onChange={(e) => setKm(e.target.value)} placeholder={String(aberta.km_inicial)} />
+              <Input type="number" inputMode="numeric" min={aberta.km_inicial} step={1} value={km} onChange={(e) => setKm(e.target.value)} placeholder="Digite o KM do painel" />
             </div>
           </div>
 

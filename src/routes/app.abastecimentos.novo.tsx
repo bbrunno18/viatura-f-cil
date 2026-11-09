@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
+import { nowLocalInput, parsePositiveDecimal } from "@/lib/format";
 
 export const Route = createFileRoute("/app/abastecimentos/novo")({
   component: NovoAbastecimento,
@@ -21,7 +22,7 @@ function NovoAbastecimento() {
   const [busy, setBusy] = useState(false);
   const [vid, setVid] = useState("");
   const [cid, setCid] = useState("");
-  const [data, setData] = useState(() => new Date().toISOString().slice(0, 16));
+  const [data, setData] = useState(() => nowLocalInput());
   const [litros, setLitros] = useState("");
   const [valor, setValor] = useState("");
 
@@ -39,13 +40,17 @@ function NovoAbastecimento() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!vid || !cid || !litros || !valor || !data) return toast.error("Preencha todos os campos");
+    const litrosNum = parsePositiveDecimal(litros);
+    const valorNum = parsePositiveDecimal(valor);
+    if (litrosNum === null) return toast.error("Informe uma quantidade de litros válida.");
+    if (valorNum === null) return toast.error("Informe um valor total válido.");
     setBusy(true);
     const { error } = await supabase.from("abastecimentos").insert({
       viatura_id: vid,
       condutor_id: cid,
       data_abastecimento: new Date(data).toISOString(),
-      litros: parseFloat(litros.replace(",", ".")),
-      valor_total: parseFloat(valor.replace(",", ".")),
+      litros: litrosNum,
+      valor_total: valorNum,
       registrado_por: user!.id,
     });
     setBusy(false);

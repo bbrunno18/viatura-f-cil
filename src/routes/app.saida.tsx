@@ -16,6 +16,7 @@ import { PhotoUpload } from "@/components/PhotoUpload";
 import { PhotosUpload } from "@/components/PhotosUpload";
 import { SignaturePad } from "@/components/SignaturePad";
 import { gerarEArmazenarTermo } from "@/lib/termo";
+import { nowLocalInput, parseKm } from "@/lib/format";
 
 const searchSchema = z.object({
   viaturaId: z.string().optional(),
@@ -29,13 +30,13 @@ export const Route = createFileRoute("/app/saida")({
 function NovaSaida() {
   const { viaturaId } = Route.useSearch();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, aprovado } = useAuth();
   const [busy, setBusy] = useState(false);
   const [vid, setVid] = useState(viaturaId ?? "");
   const [cid, setCid] = useState("");
   const [km, setKm] = useState("");
   const [local, setLocal] = useState("");
-  const [data, setData] = useState(() => new Date().toISOString().slice(0, 16));
+  const [data, setData] = useState(() => nowLocalInput());
   const [checklist, setChecklist] = useState<ChecklistItem[]>(buildEmptyChecklist());
   const [fotoHodometro, setFotoHodometro] = useState<string | null>(null);
   const [fotos, setFotos] = useState<string[]>([]);
@@ -60,7 +61,10 @@ function NovaSaida() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!aprovado) return toast.error("Sua conta precisa ser aprovada pelo administrador.");
     if (!vid || !cid || !km || !local || !data) return toast.error("Preencha todos os campos");
+    const kmInicial = parseKm(km);
+    if (kmInicial === null) return toast.error("Informe o KM inicial com números inteiros (sem negativo).");
     if (lists?.ocupadas.has(vid)) return toast.error("Esta viatura já está em uso");
     if (!assinatura) return toast.error("Assinatura do condutor é obrigatória");
 
@@ -71,7 +75,7 @@ function NovaSaida() {
         viatura_id: vid,
         condutor_id: cid,
         data_saida: new Date(data).toISOString(),
-        km_inicial: parseInt(km, 10),
+        km_inicial: kmInicial,
         local_saida: local,
         registrado_por: user!.id,
         checklist_saida: checklist as never,
@@ -97,7 +101,7 @@ function NovaSaida() {
         viatura: { modelo: viatura.modelo, cor: viatura.cor, placa: viatura.placa },
         condutor: { nome: condutor.nome, cpf: condutor.cpf, cnh_numero: condutor.cnh_numero },
         dataSaida: new Date(data).toISOString(),
-        kmInicial: parseInt(km, 10),
+        kmInicial,
         localSaida: local,
         checklist,
         assinaturaDataUrl: assinatura,
@@ -166,7 +170,7 @@ function NovaSaida() {
               </div>
               <div>
                 <Label>KM inicial</Label>
-                <Input type="number" inputMode="numeric" value={km} onChange={(e) => setKm(e.target.value)} placeholder="0" />
+                <Input type="number" inputMode="numeric" min={0} step={1} value={km} onChange={(e) => setKm(e.target.value)} placeholder="Digite o KM do painel" />
               </div>
             </div>
 

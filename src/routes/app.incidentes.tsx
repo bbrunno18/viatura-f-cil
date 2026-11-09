@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime, nowLocalInput } from "@/lib/format";
 
 export const Route = createFileRoute("/app/incidentes")({
   component: IncidentesPage,
@@ -134,7 +134,7 @@ function NovoIncidenteDialog({ onCreated }: { onCreated: () => void }) {
   const [viaturaId, setViaturaId] = useState("");
   const [condutorId, setCondutorId] = useState<string>("");
   const [descricao, setDescricao] = useState("");
-  const [data, setData] = useState(() => new Date().toISOString().slice(0, 16));
+  const [data, setData] = useState(() => nowLocalInput());
   const [files, setFiles] = useState<File[]>([]);
 
   const { data: viaturas } = useQuery({
@@ -150,7 +150,7 @@ function NovoIncidenteDialog({ onCreated }: { onCreated: () => void }) {
 
   function reset() {
     setViaturaId(""); setCondutorId(""); setDescricao(""); setFiles([]);
-    setData(new Date().toISOString().slice(0, 16));
+    setData(nowLocalInput());
   }
 
   async function submit() {

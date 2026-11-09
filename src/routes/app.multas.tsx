@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { todayLocal } from "@/lib/format";
 
 export const Route = createFileRoute("/app/multas")({
   component: Multas,
@@ -23,7 +24,7 @@ function Multas() {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({
-    viatura_id: "", condutor_id: "", data_infracao: new Date().toISOString().slice(0, 10),
+    viatura_id: "", condutor_id: "", data_infracao: todayLocal(),
     descricao: "", local: "", valor: "", situacao: "aberta", observacao: "",
   });
 

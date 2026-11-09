@@ -13,7 +13,6 @@ import {
   MapPin,
   AlertTriangle,
   Shield,
-  ShieldOff,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -30,6 +29,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -98,7 +105,7 @@ function AppHeader() {
   );
 }
 
-function AddViaturaForm({ isAdmin }: { isAdmin: boolean }) {
+function AddViaturaButton({ isAdmin }: { isAdmin: boolean }) {
   const add = useAddViatura();
   const [modelo, setModelo] = useState("");
   const [cor, setCor] = useState("");
@@ -106,14 +113,9 @@ function AddViaturaForm({ isAdmin }: { isAdmin: boolean }) {
   const [kmAtual, setKmAtual] = useState("");
   const [open, setOpen] = useState(false);
 
-  if (!isAdmin) {
-    return (
-      <Card className="p-4 bg-muted/40 text-sm text-muted-foreground flex items-center gap-2">
-        <ShieldOff className="h-4 w-4" />
-        Apenas administradores podem cadastrar novas viaturas.
-      </Card>
-    );
-  }
+  // Somente administradores (admin/master) veem o botão.
+  // O banco também bloqueia o insert para os demais (RLS is_admin_or_master).
+  if (!isAdmin) return null;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -140,25 +142,21 @@ function AddViaturaForm({ isAdmin }: { isAdmin: boolean }) {
   }
 
   return (
-    <Card className="overflow-hidden shadow-card">
-      <button
-        type="button"
-        onClick={() => setOpen((p) => !p)}
-        className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-muted/40"
-      >
-        <div className="flex items-center gap-2 text-sm font-semibold">
-          <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Plus className="h-4 w-4 text-primary" />
-          </div>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="w-full bg-gradient-primary">
+          <Plus className="h-4 w-4 mr-1" />
           Adicionar viatura
-        </div>
-        <span className="text-xs text-muted-foreground">
-          {open ? "Fechar ▲" : "Abrir ▼"}
-        </span>
-      </button>
-
-      {open && (
-        <form onSubmit={handleSubmit} className="space-y-4 border-t px-5 py-5">
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Adicionar viatura</DialogTitle>
+          <DialogDescription>
+            Cadastre uma nova viatura na frota. Modelo e cor são obrigatórios.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label>Modelo *</Label>
             <Input
@@ -214,8 +212,8 @@ function AddViaturaForm({ isAdmin }: { isAdmin: boolean }) {
             )}
           </Button>
         </form>
-      )}
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -479,7 +477,7 @@ function ViaturasAdmin() {
 
       <AppHeader />
 
-      <AddViaturaForm isAdmin={isAdmin} />
+      <AddViaturaButton isAdmin={isAdmin} />
 
       {!isLoading && !isError && data.length > 0 && (
         <Toolbar

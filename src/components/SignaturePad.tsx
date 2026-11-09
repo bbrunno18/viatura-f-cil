@@ -63,8 +63,17 @@ export function SignaturePad({ value, onChange, label = "Assine aqui" }: Props) 
     if (!drawing.current) return;
     drawing.current = false;
     last.current = null;
-    const dataUrl = canvasRef.current!.toDataURL("image/png");
-    onChange(dataUrl);
+    // Exporta sobre fundo branco para a assinatura ficar visível em qualquer tela
+    // (tema escuro, painel admin) e no PDF do termo, em vez de PNG transparente.
+    const source = canvasRef.current!;
+    const flat = document.createElement("canvas");
+    flat.width = source.width;
+    flat.height = source.height;
+    const fctx = flat.getContext("2d")!;
+    fctx.fillStyle = "#ffffff";
+    fctx.fillRect(0, 0, flat.width, flat.height);
+    fctx.drawImage(source, 0, 0);
+    onChange(flat.toDataURL("image/png"));
   }
 
   function clear() {
@@ -86,7 +95,8 @@ export function SignaturePad({ value, onChange, label = "Assine aqui" }: Props) 
           <Eraser className="h-3.5 w-3.5 mr-1" /> Limpar
         </Button>
       </div>
-      <div className="rounded-lg border-2 border-dashed border-border bg-card touch-none">
+      {/* Fundo branco fixo (como papel): a tinta é escura e some no tema escuro. */}
+      <div className="rounded-lg border-2 border-dashed border-border bg-white touch-none">
         <canvas
           ref={canvasRef}
           onPointerDown={start}

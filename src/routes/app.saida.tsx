@@ -62,7 +62,6 @@ function NovaSaida() {
     e.preventDefault();
     if (!vid || !cid || !km || !local || !data) return toast.error("Preencha todos os campos");
     if (lists?.ocupadas.has(vid)) return toast.error("Esta viatura já está em uso");
-    if (!fotoHodometro) return toast.error("Foto do hodômetro é obrigatória");
     if (!assinatura) return toast.error("Assinatura do condutor é obrigatória");
 
     setBusy(true);
@@ -181,8 +180,7 @@ function NovaSaida() {
             value={fotoHodometro}
             onChange={setFotoHodometro}
             folder="hodometro/saida"
-            label="Foto do hodômetro"
-            required
+            label="Foto do hodômetro (opcional)"
           />
 
           <PhotosUpload

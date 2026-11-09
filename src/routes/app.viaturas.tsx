@@ -1,6 +1,5 @@
 // src/routes/app.viaturas.tsx
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import {
   ChevronLeft,
@@ -18,7 +17,13 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  useViaturas,
+  useAddViatura,
+  useToggleViatura,
+  type Viatura,
+} from "@/hooks/useViaturas";
+import { viaturaSchema } from "@/lib/validators/viatura";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,35 +41,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-// ─── tipos ────────────────────────────────────────────────────────────────────
-interface Viatura {
-  id: string;
-  modelo: string;
-  cor: string;
-  placa: string | null;
-  ativa: boolean;
-  latitude?: number | null;
-  longitude?: number | null;
-}
-
 // ─── helpers ──────────────────────────────────────────────────────────────────
-const PLACA_REGEX = /^[A-Z]{3}-?\d[A-Z0-9]\d{2}$/i;
-
-function validatePlaca(placa: string) {
-  if (!placa) return true; // opcional
-  return PLACA_REGEX.test(placa.replace(/\s/g, ""));
-}
-
+// A tabela `viaturas` não guarda coordenadas; a localização vem das utilizações
+// (local de estacionamento no retorno). Aqui o atalho busca pelo modelo + placa.
 function openGoogleMaps(v: Viatura) {
-  if (v.latitude != null && v.longitude != null) {
-    window.open(
-      `https://www.google.com/maps/search/?api=1&query=${v.latitude},${v.longitude}`,
-      "_blank",
-    );
-  } else if (v.placa) {
+  if (v.placa) {
     window.open(
       `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-        v.modelo + " " + (v.placa ?? ""),
+        v.modelo + " " + v.placa,
       )}`,
       "_blank",
     );
@@ -74,11 +58,12 @@ function openGoogleMaps(v: Viatura) {
 }
 
 function exportToCSV(data: Viatura[]) {
-  const header = ["Modelo", "Cor", "Placa", "Status"];
+  const header = ["Modelo", "Cor", "Placa", "KM atual", "Status"];
   const rows = data.map((v) => [
     v.modelo,
     v.cor,
     v.placa ?? "—",
+    v.km_atual ?? "—",
     v.ativa ? "Ativa" : "Inativa",
   ]);
   const csv = [header, ...rows].map((r) => r.join(";")).join("\n");
@@ -90,58 +75,6 @@ function exportToCSV(data: Viatura[]) {
   a.click();
   URL.revokeObjectURL(url);
   toast.success("CSV exportado com sucesso!");
-}
-
-// ─── hooks de dados ───────────────────────────────────────────────────────────
-function useViaturas() {
-  return useQuery({
-    queryKey: ["viaturas-manage"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("viaturas")
-        .select("*")
-        .order("modelo");
-      if (error) throw new Error(error.message);
-      return (data ?? []) as Viatura[];
-    },
-  });
-}
-
-function useToggleViatura() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async ({ id, ativa }: { id: string; ativa: boolean }) => {
-      const { error } = await supabase
-        .from("viaturas")
-        .update({ ativa: !ativa })
-        .eq("id", id);
-      if (error) throw new Error(error.message);
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["viaturas-manage"] });
-      toast.success("Status da viatura atualizado!");
-    },
-    onError: (err: Error) => toast.error(err.message),
-  });
-}
-
-function useAddViatura() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (payload: {
-      modelo: string;
-      cor: string;
-      placa: string | null;
-    }) => {
-      const { error } = await supabase.from("viaturas").insert(payload);
-      if (error) throw new Error(error.message);
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["viaturas-manage"] });
-      toast.success("Viatura cadastrada com sucesso!");
-    },
-    onError: (err: Error) => toast.error(err.message),
-  });
 }
 
 // ─── sub-componentes ──────────────────────────────────────────────────────────
@@ -170,6 +103,7 @@ function AddViaturaForm({ isAdmin }: { isAdmin: boolean }) {
   const [modelo, setModelo] = useState("");
   const [cor, setCor] = useState("");
   const [placa, setPlaca] = useState("");
+  const [kmAtual, setKmAtual] = useState("");
   const [open, setOpen] = useState(false);
 
   if (!isAdmin) {
@@ -183,18 +117,25 @@ function AddViaturaForm({ isAdmin }: { isAdmin: boolean }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!modelo.trim() || !cor.trim())
-      return toast.error("Modelo e cor são obrigatórios.");
-    if (placa && !validatePlaca(placa))
-      return toast.error("Placa inválida. Use o formato ABC-1D23.");
+    const parsed = viaturaSchema.safeParse({
+      modelo,
+      cor,
+      placa: placa.replace(/\s/g, ""),
+      km_atual: kmAtual.trim() === "" ? null : kmAtual,
+    });
+    if (!parsed.success)
+      return toast.error(parsed.error.issues[0]?.message ?? "Dados inválidos.");
+    const { modelo: m, cor: c, placa: p, km_atual } = parsed.data;
     await add.mutateAsync({
-      modelo: modelo.trim(),
-      cor: cor.trim(),
-      placa: placa.trim() || null,
+      modelo: m,
+      cor: c,
+      placa: p || null,
+      km_atual: km_atual ?? null,
     });
     setModelo("");
     setCor("");
     setPlaca("");
+    setKmAtual("");
     setOpen(false);
   }
 
@@ -248,6 +189,18 @@ function AddViaturaForm({ isAdmin }: { isAdmin: boolean }) {
                 className="mt-1 font-mono"
               />
             </div>
+          </div>
+          <div>
+            <Label>KM atual (opcional)</Label>
+            <Input
+              type="number"
+              inputMode="numeric"
+              min={0}
+              value={kmAtual}
+              onChange={(e) => setKmAtual(e.target.value)}
+              placeholder="Ex.: 45230"
+              className="mt-1"
+            />
           </div>
           <Button
             type="submit"
@@ -384,6 +337,12 @@ function ViaturaCard({
             <>
               {" · "}
               <span className="font-mono">{v.placa}</span>
+            </>
+          )}
+          {v.km_atual != null && (
+            <>
+              {" · "}
+              {v.km_atual.toLocaleString("pt-BR")} km
             </>
           )}
         </div>

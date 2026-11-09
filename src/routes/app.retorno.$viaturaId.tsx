@@ -53,7 +53,6 @@ function Retorno() {
     if (!aberta) return;
     if (!aprovado) return toast.error("Sua conta precisa ser aprovada pelo administrador.");
     if (!km || !data) return toast.error("Preencha KM e data");
-    if (!fotoHodometro) return toast.error("Foto do hodômetro é obrigatória");
     if (!assinatura) return toast.error("A assinatura do condutor é obrigatória");
     const kmNum = parseInt(km, 10);
     if (kmNum < aberta.km_inicial) return toast.error(`KM final deve ser ≥ ${aberta.km_inicial}`);
@@ -122,8 +121,7 @@ function Retorno() {
             value={fotoHodometro}
             onChange={setFotoHodometro}
             folder="hodometro/retorno"
-            label="Foto do hodômetro (final)"
-            required
+            label="Foto do hodômetro (opcional)"
           />
 
           <GpsCapture

@@ -14,6 +14,7 @@ import {
   AlertTriangle,
   Shield,
   X,
+  QrCode,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -28,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { ViaturaQrDialog } from "@/components/ViaturaQrDialog";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -309,6 +311,7 @@ function ViaturaCard({
   onToggle: (v: Viatura) => void;
   toggling: boolean;
 }) {
+  const [qrOpen, setQrOpen] = useState(false);
   return (
     <Card
       className={`p-3 flex items-center gap-3 shadow-card transition-opacity ${
@@ -361,6 +364,18 @@ function ViaturaCard({
           <Button
             size="icon"
             variant="ghost"
+            onClick={() => setQrOpen(true)}
+            title="QR Code da viatura"
+            className="h-9 w-9 rounded-xl text-muted-foreground hover:bg-secondary hover:text-primary"
+          >
+            <QrCode className="h-4 w-4" />
+          </Button>
+        )}
+
+        {isAdmin && (
+          <Button
+            size="icon"
+            variant="ghost"
             onClick={() => onToggle(v)}
             disabled={toggling}
             title={v.ativa ? "Desativar viatura" : "Ativar viatura"}
@@ -380,6 +395,7 @@ function ViaturaCard({
           </Button>
         )}
       </div>
+      {isAdmin && <ViaturaQrDialog viatura={v} open={qrOpen} onOpenChange={setQrOpen} />}
     </Card>
   );
 }

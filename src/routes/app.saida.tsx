@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { ChevronLeft, Loader2, FileText } from "lucide-react";
+import { ChevronLeft, Loader2, FileText, QrCode, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -17,9 +17,12 @@ import { PhotosUpload } from "@/components/PhotosUpload";
 import { SignaturePad } from "@/components/SignaturePad";
 import { gerarEArmazenarTermo } from "@/lib/termo";
 import { nowLocalInput, parseKm } from "@/lib/format";
+import { QrScanner } from "@/components/QrScanner";
+import { parseViaturaQr } from "@/lib/qr";
 
 const searchSchema = z.object({
   viaturaId: z.string().optional(),
+  qr: z.string().optional(),
 });
 
 export const Route = createFileRoute("/app/saida")({
@@ -28,9 +31,15 @@ export const Route = createFileRoute("/app/saida")({
 });
 
 function NovaSaida() {
-  const { viaturaId } = Route.useSearch();
+  const { viaturaId, qr } = Route.useSearch();
   const navigate = useNavigate();
-  const { user, aprovado } = useAuth();
+  const { user, aprovado, isAdmin, isMaster } = useAuth();
+  const podeManual = isAdmin || isMaster;
+  // A viatura só é liberada para saída depois de escanear o QR Code dela
+  // (link do QR aberto pela câmera, ou leitura pelo scanner do app).
+  const [scannedId, setScannedId] = useState<string | null>(qr && viaturaId ? viaturaId : null);
+  const [scanning, setScanning] = useState(false);
+  const [manual, setManual] = useState(false);
   const [busy, setBusy] = useState(false);
   const [vid, setVid] = useState(viaturaId ?? "");
   const [cid, setCid] = useState("");
@@ -56,12 +65,32 @@ function NovaSaida() {
   });
 
   useEffect(() => {
-    if (viaturaId) setVid(viaturaId);
-  }, [viaturaId]);
+    if (qr && viaturaId) {
+      setScannedId(viaturaId);
+      setVid(viaturaId);
+    }
+  }, [viaturaId, qr]);
+
+  function handleScan(text: string) {
+    setScanning(false);
+    const id = parseViaturaQr(text);
+    if (!id) return toast.error("QR Code inválido. Escaneie o QR Code colado na viatura.");
+    if (viaturaId && !qr && id !== viaturaId) {
+      return toast.error("Este QR Code é de outra viatura. Escaneie o QR da viatura escolhida.");
+    }
+    setScannedId(id);
+    setVid(id);
+  }
+
+  const liberada = !!scannedId || (manual && podeManual);
+  const viaturaScan = scannedId ? lists?.viaturas.find((v: any) => v.id === scannedId) : null;
+  const scanInvalido = !!scannedId && !!lists && !viaturaScan;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!aprovado) return toast.error("Sua conta precisa ser aprovada pelo administrador.");
+    if (!liberada) return toast.error("Escaneie o QR Code da viatura para continuar.");
+    if (scannedId && vid !== scannedId) return toast.error("A viatura deve ser a do QR Code escaneado.");
     if (!vid || !cid || !km || !local || !data) return toast.error("Preencha todos os campos");
     const kmInicial = parseKm(km);
     if (kmInicial === null) return toast.error("Informe o KM inicial com números inteiros (sem negativo).");
@@ -133,11 +162,71 @@ function NovaSaida() {
         </p>
       </div>
 
+      {!liberada && (
+        <Card className="p-5 shadow-card space-y-4">
+          <div className="flex items-start gap-3">
+            <div className="h-11 w-11 rounded-xl bg-secondary flex items-center justify-center shrink-0">
+              <QrCode className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h2 className="font-semibold">Escaneie o QR Code da viatura</h2>
+              <p className="text-sm text-muted-foreground">
+                Para retirar uma viatura, aponte a câmera para o QR Code colado nela.
+              </p>
+            </div>
+          </div>
+          {scanning ? (
+            <>
+              <QrScanner
+                onResult={handleScan}
+                onError={(m) => {
+                  setScanning(false);
+                  toast.error(m);
+                }}
+              />
+              <Button type="button" variant="outline" className="w-full" onClick={() => setScanning(false)}>
+                Cancelar
+              </Button>
+            </>
+          ) : (
+            <Button type="button" className="w-full h-11 bg-gradient-primary" onClick={() => setScanning(true)}>
+              <QrCode className="h-4 w-4 mr-2" /> Escanear QR Code
+            </Button>
+          )}
+          {podeManual && (
+            <button type="button" className="text-xs text-primary" onClick={() => setManual(true)}>
+              Selecionar viatura manualmente (administrador)
+            </button>
+          )}
+        </Card>
+      )}
+
+      {scanInvalido && (
+        <Card className="p-4 text-sm text-destructive">
+          Viatura do QR Code não encontrada ou inativa.{" "}
+          <button type="button" className="underline" onClick={() => { setScannedId(null); setVid(""); }}>
+            Escanear novamente
+          </button>
+        </Card>
+      )}
+
+      {liberada && !scanInvalido && (
       <Card className="p-5 shadow-card">
         <form onSubmit={submit} className="space-y-5">
           <div className="space-y-4">
             <div>
               <Label>Viatura</Label>
+              {scannedId ? (
+                <div className="flex items-center gap-2 rounded-md border bg-secondary/50 px-3 py-2 text-sm">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <span className="truncate">
+                    {viaturaScan ? `${(viaturaScan as any).modelo} — ${(viaturaScan as any).cor}${(viaturaScan as any).placa ? ` (${(viaturaScan as any).placa})` : ""}` : "Carregando..."}
+                  </span>
+                  <button type="button" className="ml-auto text-xs text-primary shrink-0" onClick={() => { setScannedId(null); setVid(""); }}>
+                    Trocar
+                  </button>
+                </div>
+              ) : (
               <Select value={vid} onValueChange={setVid}>
                 <SelectTrigger><SelectValue placeholder="Selecione a viatura" /></SelectTrigger>
                 <SelectContent>
@@ -148,6 +237,7 @@ function NovaSaida() {
                   ))}
                 </SelectContent>
               </Select>
+              )}
             </div>
 
             <div>
@@ -204,6 +294,7 @@ function NovaSaida() {
           </Button>
         </form>
       </Card>
+      )}
     </div>
   );
 }

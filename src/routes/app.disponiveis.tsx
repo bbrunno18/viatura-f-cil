@@ -102,7 +102,7 @@ function ViaturasDisponiveis() {
                       </Link>
                     ) : (
                       <Link to="/app/saida" search={{ viaturaId: v.id }} className="flex-1">
-                        <Button variant="outline" size="sm" className="w-full">Registrar saída</Button>
+                        <Button variant="outline" size="sm" className="w-full">Escanear QR e registrar saída</Button>
                       </Link>
                     )}
                   </div>

@@ -17,6 +17,7 @@ function AppLayout() {
     );
   }
   if (!user) return <Navigate to="/auth" />;
+  if (user.user_metadata?.must_change_password === true) return <Navigate to="/trocar-senha" />;
   return (
     <AppShell>
       <Outlet />

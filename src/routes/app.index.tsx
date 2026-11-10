@@ -91,7 +91,7 @@ function Dashboard() {
       {/* Operação */}
       <Section title="Operação">
         <div className="grid grid-cols-2 gap-3">
-          <ActionTile to="/app/saida" icon={Plus} label="Nova Saída" desc="Iniciar uso de viatura" tone="primary" />
+          <ActionTile to="/app/saida" icon={Plus} label="Nova Saída" desc="Escaneie o QR da viatura" tone="primary" />
           <ActionTile to="/app/abastecimentos/novo" icon={Fuel} label="Abastecer" desc="Registrar abastecimento" tone="accent" />
           <ActionTile to="/app/reservas" icon={CalendarClock} label="Reservas" desc={`${stats?.reservas ?? 0} agendada(s)`} tone="neutral" />
           <ActionTile to="/app/incidentes" icon={AlertTriangle} label="Incidentes" desc="Registrar ocorrência" tone="destructive" />

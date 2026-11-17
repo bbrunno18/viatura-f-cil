@@ -8,13 +8,14 @@ export function exportPDF(opts: {
   head: string[];
   rows: (string | number)[][];
   filename: string;
+  appName?: string;
 }) {
   const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
   doc.setFontSize(16);
   doc.text("Ministério da Justiça e Segurança Pública", 40, 40);
   doc.setFontSize(11);
   doc.setTextColor(120);
-  doc.text("Frota COLOG — Relatório", 40, 56);
+  doc.text(`${opts.appName ?? "Easy Patrol"} — Relatório`, 40, 56);
   doc.setTextColor(20);
   doc.setFontSize(13);
   doc.text(opts.title, 40, 80);

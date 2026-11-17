@@ -41,10 +41,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    supabase.auth.getSession().then(({ data }) => {
+    // Só termina o "loading" depois de carregar papéis/aprovação: sem isso, ao recarregar uma
+    // página de admin (ex.: /app/admin) o isAdmin ainda é false e o app redirecionava para o início.
+    supabase.auth.getSession().then(async ({ data }) => {
       setSession(data.session);
       setUser(data.session?.user ?? null);
-      if (data.session?.user) loadProfile(data.session.user.id, data.session.user.email ?? null);
+      if (data.session?.user) {
+        try {
+          await loadProfile(data.session.user.id, data.session.user.email ?? null);
+        } catch {
+          /* mantém o app utilizável mesmo se o perfil falhar */
+        }
+      }
       setLoading(false);
     });
 

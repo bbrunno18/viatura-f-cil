@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { exportPDF, exportXLSX } from "@/lib/exporters";
+import { useSecao } from "@/hooks/useSecao";
 import { formatDateTime, monthKeyLocal } from "@/lib/format";
 
 export const Route = createFileRoute("/app/relatorios")({
@@ -15,6 +16,8 @@ export const Route = createFileRoute("/app/relatorios")({
 const COLORS = ["#283c78", "#c89b3c", "#3b8a5e", "#b53a3a", "#6c5ce7"];
 
 function Relatorios() {
+  const { secao } = useSecao();
+  const appName = secao ? `Easy Patrol ${secao}` : "Easy Patrol";
   const { data } = useQuery({
     queryKey: ["relatorios"],
     queryFn: async () => {
@@ -57,6 +60,7 @@ function Relatorios() {
 
   function exportUtilPDF() {
     exportPDF({
+      appName,
       title: "Histórico de Utilizações",
       subtitle: `Gerado em ${new Date().toLocaleString("pt-BR")}`,
       head: ["Viatura", "Placa", "Condutor", "Saída", "KM ini", "Retorno", "KM fim", "Local"],
@@ -84,6 +88,7 @@ function Relatorios() {
   }
   function exportAbastPDF() {
     exportPDF({
+      appName,
       title: "Abastecimentos",
       subtitle: `Gerado em ${new Date().toLocaleString("pt-BR")}`,
       head: ["Data", "Viatura", "Placa", "Condutor", "Litros", "Valor"],

@@ -15,7 +15,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { formatBRL, formatCPF, formatDateTime, weekday } from "@/lib/format";
+import { formatBRL, formatCPF, formatDateTime, weekday, todayLocal } from "@/lib/format";
+import { AddUsuarioDialog } from "@/components/AddUsuarioDialog";
+import { SecaoSettings } from "@/components/SecaoSettings";
+import { useSecao } from "@/hooks/useSecao";
 
 export const Route = createFileRoute("/app/admin")({
   component: AdminPanel,
@@ -24,6 +27,9 @@ export const Route = createFileRoute("/app/admin")({
 function AdminPanel() {
   const qc = useQueryClient();
   const { isAdmin, isMaster, loading } = useAuth();
+  const { secao } = useSecao();
+  const nomeApp = secao ? `Easy Patrol ${secao}` : "Easy Patrol";
+  const slug = nomeApp.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-");
 
   const { data } = useQuery({
     queryKey: ["admin-all"],
@@ -122,7 +128,7 @@ function AdminPanel() {
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(
       data.viaturas.map((v: any) => ({ Modelo: v.modelo, Cor: v.cor, Placa: v.placa ?? "", Ativa: v.ativa ? "Sim" : "Não" }))
     ), "Viaturas");
-    XLSX.writeFile(wb, `frota-colog-${new Date().toISOString().slice(0, 10)}.xlsx`);
+    XLSX.writeFile(wb, `${slug}-${todayLocal()}.xlsx`);
     toast.success("Planilha exportada");
   }
 
@@ -131,7 +137,7 @@ function AdminPanel() {
     const doc = new jsPDF({ orientation: "landscape" });
     const hoje = new Date().toLocaleDateString("pt-BR");
     doc.setFontSize(16);
-    doc.text("Frota COLOG — Relatório Geral", 14, 15);
+    doc.text(`${nomeApp} — Relatório Geral`, 14, 15);
     doc.setFontSize(10);
     doc.text(`Gerado em ${hoje}`, 14, 22);
     doc.text(`Viaturas: ${data.viaturas.length}  |  Em uso: ${stats?.emUso ?? 0}  |  Litros: ${stats?.totalLitros.toFixed(0) ?? 0}  |  Gasto: ${formatBRL(stats?.totalGasto ?? 0)}`, 14, 28);
@@ -175,7 +181,7 @@ function AdminPanel() {
       headStyles: { fillColor: [40, 60, 120] },
     });
 
-    doc.save(`frota-colog-relatorio-${new Date().toISOString().slice(0, 10)}.pdf`);
+    doc.save(`${slug}-relatorio-${todayLocal()}.pdf`);
     toast.success("PDF gerado — imprima ou salve");
   }
 
@@ -229,6 +235,8 @@ function AdminPanel() {
         </div>
       )}
 
+      <SecaoSettings />
+
       {stats && stats.pendentes > 0 && (
         <Card className="p-3 bg-warning/10 border-warning/40 text-sm">
           <b>{stats.pendentes}</b> usuário(s) aguardando aprovação. Veja a aba <b>Usuários</b>.
@@ -244,6 +252,10 @@ function AdminPanel() {
         </TabsList>
 
         <TabsContent value="users" className="space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="text-sm text-muted-foreground">Cadastre usuários já aprovados e defina o perfil.</div>
+            <AddUsuarioDialog />
+          </div>
           {isMaster && (
             <Card className="p-3 bg-accent/10 border-accent/40 text-xs text-foreground">
               <b>Gestão de Papéis (Master):</b> use os botões <b>Tornar Admin</b> ou <b>Tornar Condutor</b> para definir o papel de cada usuário. Apenas o Master pode realizar essa alteração.

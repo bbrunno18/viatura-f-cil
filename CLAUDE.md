@@ -1,11 +1,11 @@
-# CLAUDE.md — Easy Patrol (Frota COLOG)
+# CLAUDE.md — Easy Patrol
 
 Contexto de engenharia, arquitetura, comandos e regras de negócio para assistência no projeto **Easy Patrol**.
 
 ---
 
 ## 1. Visão Geral e Negócio
-* **Nome do Sistema:** Easy Patrol (Frota COLOG)
+* **Nome do Sistema:** Easy Patrol. A seção (ex.: COLOG) é opcional e só aparece se o administrador preencher em Admin > Identificação da seção (tabela `app_settings`, chave `secao_nome`).
 * **Organização:** Ministério da Justiça e Segurança Pública (MJSP)
 * **Objetivo:** Gestão operacional mobile-first de viaturas oficiais: controle de saídas e retornos, checklists de vistoria, assinaturas digitais com geração de Termo de Responsabilidade em PDF, controle de abastecimentos, manutenções, multas, incidentes/avarias e geolocalização.
 * **Administrador Master:** `brunno.almeida@mj.gov.br` (acesso irrestrito e aprovação de usuários).
@@ -158,4 +158,6 @@ SUPABASE_PROJECT_ID="ecdwhafgltsfikfumyto"
 * Admin gera/imprime o QR em Viaturas (ícone QR). O QR aponta para `/app/saida?viaturaId=<id>&qr=1`; a saída só abre após escanear (scanner `html5-qrcode` no app ou câmera do celular). Admin/master pode escolher manualmente. A trava é só no app (o banco não valida).
 * Contas com `user_metadata.must_change_password = true` são redirecionadas para `/trocar-senha` até definirem nova senha.
 * Emails master automáticos no cadastro: brunno.almeida, cosme.marques, jorge.silva (`@mj.gov.br`) — ver `handle_new_user` e `src/lib/auth.tsx`.
+* Adicionar usuário: Admin > Usuários > "Adicionar usuário" chama a função `admin_criar_usuario` (SECURITY DEFINER). Cria a conta já aprovada, com senha provisória e `must_change_password`. Admin cria só "usuário"; criar "administrador" exige Master. Migração: `20261117100000_app_settings_e_criar_usuario.sql` (já aplicada no banco do Lovable Cloud).
+* Admin-only no cliente: esperar `loading` do `useAuth` (ele só termina depois de carregar os papéis); antes disso `isAdmin` é false e a página redirecionava.
 

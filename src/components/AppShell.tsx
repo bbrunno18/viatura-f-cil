@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import logoMJ from "@/assets/logo-mj.png";
 import { DevCredit } from "@/components/DevCredit";
+import { useSecao } from "@/hooks/useSecao";
 
 const navLeft = [
   { to: "/app", label: "Início", icon: Home },
@@ -45,6 +46,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     : "bg-sidebar-foreground/10 border-sidebar-foreground/20 text-sidebar-foreground/90";
   const location = useLocation();
   const online = useOnline();
+  const { secao } = useSecao();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -59,7 +61,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <img src={logoMJ} alt="Easy Patrol" className="h-full w-full object-cover" />
             </div>
             <div className="leading-tight">
-              <div className="font-display font-bold text-base">Frota COLOG</div>
+              <div className="font-display font-bold text-base">
+                Easy Patrol{secao && <span className="text-accent"> {secao}</span>}
+              </div>
               <div className="text-[10px] uppercase tracking-widest text-sidebar-foreground/70">
                 Controle de Viaturas
               </div>

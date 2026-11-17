@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { DevCredit } from "@/components/DevCredit";
+import { useSecao } from "@/hooks/useSecao";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { motion } from "framer-motion";
@@ -31,6 +32,7 @@ const forgotSchema = z.object({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { secao } = useSecao();
   const { user, loading } = useAuth();
   const [busy, setBusy] = useState(false);
   const [mode, setMode] = useState<"auth" | "forgot">("auth");
@@ -111,7 +113,7 @@ function AuthPage() {
             <div className="mx-auto h-24 w-24 rounded-2xl bg-white flex items-center justify-center shadow-elegant mb-4 overflow-hidden">
               <img src={logoMJ} alt="Easy Patrol" className="h-full w-full object-cover" />
             </div>
-            <h1 className="font-display text-3xl font-bold">Frota COLOG</h1>
+            <h1 className="font-display text-3xl font-bold">Easy Patrol{secao && <span className="text-accent"> {secao}</span>}</h1>
             <p className="text-sm text-sidebar-foreground/75 mt-1 tracking-wide uppercase">
               Controle inteligente de viaturas
             </p>

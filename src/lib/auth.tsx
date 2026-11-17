@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
-const MASTER_EMAILS = ["brunno.almeida@mj.gov.br", "cosme.marques@mj.gov.br", "jorge.silva@mj.gov.br"];
+const MASTER_EMAIL = "brunno.almeida@mj.gov.br";
 
 interface AuthContextValue {
   user: User | null;
@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       supabase.from("profiles").select("aprovado").eq("id", uid).maybeSingle(),
     ]);
     const roles = rolesRes.data ?? [];
-    const emailIsMaster = MASTER_EMAILS.includes((email ?? "").trim().toLowerCase());
+    const emailIsMaster = (email ?? "").trim().toLowerCase() === MASTER_EMAIL;
     const master = emailIsMaster || roles.some((r: any) => r.role === "master");
     const admin = roles.some((r: any) => r.role === "admin") || master;
     setIsMaster(master);

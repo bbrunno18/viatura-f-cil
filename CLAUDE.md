@@ -157,7 +157,7 @@ SUPABASE_PROJECT_ID="ecdwhafgltsfikfumyto"
 ## 9. QR Code das viaturas e primeiro acesso
 * Admin gera/imprime o QR em Viaturas (ícone QR). O QR aponta para `/app/saida?viaturaId=<id>&qr=1`; a saída só abre após escanear (scanner `html5-qrcode` no app ou câmera do celular). Admin/master pode escolher manualmente. A trava é só no app (o banco não valida).
 * Contas com `user_metadata.must_change_password = true` são redirecionadas para `/trocar-senha` até definirem nova senha.
-* Emails master automáticos no cadastro: brunno.almeida, cosme.marques, jorge.silva (`@mj.gov.br`) — ver `handle_new_user` e `src/lib/auth.tsx`.
+* Único master automático no cadastro: `brunno.almeida@mj.gov.br` (ver `handle_new_user` e `src/lib/auth.tsx`). Cosme e Jorge são administradores (criados pelo master em Admin > Usuários > Adicionar usuário).
 * Adicionar usuário: Admin > Usuários > "Adicionar usuário" chama a função `admin_criar_usuario` (SECURITY DEFINER). Cria a conta já aprovada, com senha provisória e `must_change_password`. Admin cria só "usuário"; criar "administrador" exige Master. Migração: `20261117100000_app_settings_e_criar_usuario.sql` (já aplicada no banco do Lovable Cloud).
 * Admin-only no cliente: esperar `loading` do `useAuth` (ele só termina depois de carregar os papéis); antes disso `isAdmin` é false e a página redirecionava.
 

@@ -323,16 +323,14 @@ function ViaturaCard({
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="font-medium truncate">{v.modelo}</span>
+        <div className="font-medium leading-tight line-clamp-2">{v.modelo}</div>
+        <div className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground">
           <Badge
             variant={v.ativa ? "default" : "secondary"}
             className="text-[10px] px-1.5 py-0 h-4 shrink-0"
           >
             {v.ativa ? "Ativa" : "Inativa"}
           </Badge>
-        </div>
-        <div className="text-xs text-muted-foreground truncate">
           {v.cor}
           {v.placa && (
             <>

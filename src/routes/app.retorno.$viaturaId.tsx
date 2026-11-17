@@ -57,6 +57,8 @@ function Retorno() {
     const kmNum = parseKm(km);
     if (kmNum === null) return toast.error("Informe o KM final com números inteiros (sem negativo).");
     if (kmNum < aberta.km_inicial) return toast.error(`KM final deve ser ≥ ${aberta.km_inicial}`);
+    if (new Date(data) < new Date(aberta.data_saida)) return toast.error("A data de retorno não pode ser anterior à saída.");
+    if (new Date(data).getTime() > Date.now() + 5 * 60 * 1000) return toast.error("A data de retorno não pode estar no futuro.");
     setBusy(true);
     const { error } = await supabase
       .from("utilizacoes")
@@ -107,14 +109,14 @@ function Retorno() {
 
       <Card className="p-5 shadow-card">
         <form onSubmit={submit} className="space-y-5">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label>Data e hora</Label>
               <Input type="datetime-local" value={data} onChange={(e) => setData(e.target.value)} />
             </div>
             <div>
               <Label>KM final</Label>
-              <Input type="number" inputMode="numeric" min={aberta.km_inicial} step={1} value={km} onChange={(e) => setKm(e.target.value)} placeholder="Digite o KM do painel" />
+              <Input type="number" inputMode="numeric" min={aberta.km_inicial} step={1} value={km} onChange={(e) => setKm(e.target.value)} placeholder="KM do painel" />
             </div>
           </div>
 

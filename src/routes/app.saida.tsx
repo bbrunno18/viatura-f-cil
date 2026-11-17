@@ -16,13 +16,14 @@ import { PhotoUpload } from "@/components/PhotoUpload";
 import { PhotosUpload } from "@/components/PhotosUpload";
 import { SignaturePad } from "@/components/SignaturePad";
 import { gerarEArmazenarTermo } from "@/lib/termo";
-import { nowLocalInput, parseKm } from "@/lib/format";
+import { nowLocalInput, parseKm, parseDateOnly, formatDateBR } from "@/lib/format";
 import { QrScanner } from "@/components/QrScanner";
 import { parseViaturaQr } from "@/lib/qr";
 
 const searchSchema = z.object({
-  viaturaId: z.string().optional(),
-  qr: z.string().optional(),
+  // O roteador converte "1" em número na URL (?qr=1); coerce evita erro de validação.
+  viaturaId: z.coerce.string().optional(),
+  qr: z.coerce.string().optional(),
 });
 
 export const Route = createFileRoute("/app/saida")({
@@ -82,6 +83,11 @@ function NovaSaida() {
     setVid(id);
   }
 
+  const hojeZero = new Date(new Date().setHours(0, 0, 0, 0));
+  const cnhVencida = (c: any) => {
+    const v = parseDateOnly(c?.cnh_validade);
+    return !!v && v < hojeZero;
+  };
   const liberada = !!scannedId || (manual && podeManual);
   const viaturaScan = scannedId ? lists?.viaturas.find((v: any) => v.id === scannedId) : null;
   const scanInvalido = !!scannedId && !!lists && !viaturaScan;
@@ -95,6 +101,8 @@ function NovaSaida() {
     const kmInicial = parseKm(km);
     if (kmInicial === null) return toast.error("Informe o KM inicial com números inteiros (sem negativo).");
     if (lists?.ocupadas.has(vid)) return toast.error("Esta viatura já está em uso");
+    const condSel = lists?.condutores.find((c: any) => c.id === cid) as any;
+    if (cnhVencida(condSel)) return toast.error(`CNH vencida em ${formatDateBR(condSel.cnh_validade)}. Este condutor não pode retirar viatura.`);
     if (!assinatura) return toast.error("Assinatura do condutor é obrigatória");
 
     setBusy(true);
@@ -246,21 +254,23 @@ function NovaSaida() {
                 <SelectTrigger><SelectValue placeholder="Selecione o condutor" /></SelectTrigger>
                 <SelectContent>
                   {lists?.condutores.map((c: any) => (
-                    <SelectItem key={c.id} value={c.id}>{c.nome} — {c.cpf}</SelectItem>
+                    <SelectItem key={c.id} value={c.id} disabled={cnhVencida(c)}>
+                      {c.nome} — {c.cpf}{cnhVencida(c) ? " · CNH vencida" : ""}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <Link to="/app/condutores" className="text-xs text-primary mt-1 inline-block">+ Cadastrar novo condutor</Link>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <Label>Data e hora</Label>
                 <Input type="datetime-local" value={data} onChange={(e) => setData(e.target.value)} />
               </div>
               <div>
                 <Label>KM inicial</Label>
-                <Input type="number" inputMode="numeric" min={0} step={1} value={km} onChange={(e) => setKm(e.target.value)} placeholder="Digite o KM do painel" />
+                <Input type="number" inputMode="numeric" min={0} step={1} value={km} onChange={(e) => setKm(e.target.value)} placeholder="KM do painel" />
               </div>
             </div>
 

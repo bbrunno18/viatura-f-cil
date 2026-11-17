@@ -1,17 +1,37 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, LogOut, AlertTriangle, Fuel, Users, Settings, Sun, Moon } from "lucide-react";
+import { Home, LogOut, Fuel, Users, Settings, Sun, Moon, Car, QrCode, WifiOff } from "lucide-react";
+import { useEffect, useState } from "react";
 import { usePreferences } from "@/lib/preferences";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import logoMJ from "@/assets/logo-mj.png";
+import { DevCredit } from "@/components/DevCredit";
 
-const navItems = [
+const navLeft = [
   { to: "/app", label: "Início", icon: Home },
+  { to: "/app/viaturas", label: "Viaturas", icon: Car },
+];
+const navRight = [
   { to: "/app/abastecimentos", label: "Abast.", icon: Fuel },
-  { to: "/app/incidentes", label: "Incidentes", icon: AlertTriangle },
   { to: "/app/condutores", label: "Condutores", icon: Users },
 ];
+
+function useOnline() {
+  const [online, setOnline] = useState(true);
+  useEffect(() => {
+    setOnline(navigator.onLine);
+    const on = () => setOnline(true);
+    const off = () => setOnline(false);
+    window.addEventListener("online", on);
+    window.addEventListener("offline", off);
+    return () => {
+      window.removeEventListener("online", on);
+      window.removeEventListener("offline", off);
+    };
+  }, []);
+  return online;
+}
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, isAdmin, isMaster, signOut } = useAuth();
@@ -24,6 +44,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     ? "bg-primary/20 border-primary/40 text-sidebar-foreground"
     : "bg-sidebar-foreground/10 border-sidebar-foreground/20 text-sidebar-foreground/90";
   const location = useLocation();
+  const online = useOnline();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -88,36 +109,53 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         )}
       </header>
 
+      {!online && (
+        <div role="status" className="bg-destructive text-destructive-foreground text-xs font-medium py-1.5 px-4 flex items-center justify-center gap-2">
+          <WifiOff className="h-3.5 w-3.5" /> Sem conexão com a internet. Os registros só serão salvos quando voltar.
+        </div>
+      )}
+
       {/* Main */}
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 pb-28">
+      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 pb-32">
         {children}
+        <DevCredit className="mt-10 text-muted-foreground" />
       </main>
 
       {/* Bottom Nav */}
-      <nav className="fixed bottom-0 inset-x-0 z-30 bg-card border-t border-border safe-bottom">
-        <div className="max-w-2xl mx-auto grid grid-cols-4">
-          {navItems.map((item) => {
-            const active =
-              item.to === "/app"
-                ? location.pathname === "/app"
-                : location.pathname.startsWith(item.to);
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={cn(
-                  "flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-colors",
-                  active ? "text-primary" : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <Icon className={cn("h-5 w-5", active && "stroke-[2.5]")} />
-                {item.label}
-              </Link>
-            );
-          })}
+      <nav className="fixed bottom-0 inset-x-0 z-30 bg-card/95 backdrop-blur border-t border-border safe-bottom" aria-label="Navegação principal">
+        <div className="max-w-2xl mx-auto grid grid-cols-5 items-end">
+          {navLeft.map((item) => <NavLink key={item.to} item={item} pathname={location.pathname} />)}
+          <Link
+            to="/app/saida"
+            aria-label="Nova saída: escanear QR Code da viatura"
+            className="flex flex-col items-center gap-1 pb-2 text-[11px] font-semibold text-primary"
+          >
+            <span className="-mt-6 h-14 w-14 rounded-full bg-gradient-accent text-accent-foreground shadow-elegant ring-4 ring-background flex items-center justify-center transition-transform active:scale-95">
+              <QrCode className="h-6 w-6" />
+            </span>
+            Escanear
+          </Link>
+          {navRight.map((item) => <NavLink key={item.to} item={item} pathname={location.pathname} />)}
         </div>
       </nav>
     </div>
+  );
+}
+
+function NavLink({ item, pathname }: { item: { to: string; label: string; icon: React.ComponentType<{ className?: string }> }; pathname: string }) {
+  const active = item.to === "/app" ? pathname === "/app" : pathname.startsWith(item.to);
+  const Icon = item.icon;
+  return (
+    <Link
+      to={item.to}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-colors",
+        active ? "text-primary" : "text-muted-foreground hover:text-foreground",
+      )}
+    >
+      <Icon className={cn("h-5 w-5", active && "stroke-[2.5]")} />
+      {item.label}
+    </Link>
   );
 }

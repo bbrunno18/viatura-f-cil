@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 
+import { parseDateOnly, formatDateBR } from "@/lib/format";
 export const Route = createFileRoute("/app/documentos")({
   component: Documentos,
 });
@@ -146,7 +147,7 @@ function Documentos() {
       ) : (
         <div className="space-y-2">
           {data?.map((d: any) => {
-            const venc = d.validade ? new Date(d.validade) : null;
+            const venc = parseDateOnly(d.validade);
             const vencido = venc && venc < hoje;
             const vencendo = venc && !vencido && venc <= em30;
             return (
@@ -158,7 +159,7 @@ function Documentos() {
                   <div className="font-semibold truncate">{d.tipo} — {viaturaNome(d.viatura_id)}</div>
                   <div className="text-xs text-muted-foreground">
                     {d.numero ? `Nº ${d.numero}` : ""}
-                    {venc ? ` • Vence ${venc.toLocaleDateString("pt-BR")}` : ""}
+                    {venc ? ` • Vence ${formatDateBR(d.validade)}` : ""}
                   </div>
                   {(vencido || vencendo) && (
                     <Badge variant={vencido ? "destructive" : "secondary"} className="mt-1 text-[10px]">

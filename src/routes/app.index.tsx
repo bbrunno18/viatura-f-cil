@@ -3,18 +3,24 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   Car, Fuel, Plus, Clock, AlertTriangle, ArrowRight, ClipboardList,
-  ShieldCheck, Map, CalendarClock, Wrench, BarChart3, Activity, FileWarning, FileText,
+  ShieldCheck, Users, Map, CalendarClock, Wrench, BarChart3, Activity, FileWarning, FileText,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth";
+import { greeting } from "@/lib/format";
 
+import { parseDateOnly } from "@/lib/format";
 export const Route = createFileRoute("/app/")({
   component: Dashboard,
 });
 
 function Dashboard() {
   const { aprovado, profileLoaded, isAdmin, isMaster, user } = useAuth();
+  const rawName = (user?.user_metadata?.nome as string | undefined) || user?.email?.split("@")[0] || "";
+  const firstName = rawName
+    .split(/[.\s_-]+/)[0]
+    .replace(/^./, (c) => c.toUpperCase());
 
   const { data: stats } = useQuery({
     queryKey: ["dashboard-stats"],
@@ -28,7 +34,7 @@ function Dashboard() {
       const total = vRes.count ?? 0;
       const emUso = abertasRes.count ?? 0;
       const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-      const vencidas = (manutRes.data ?? []).filter((m: any) => new Date(m.proxima_data) <= hoje).length;
+      const vencidas = (manutRes.data ?? []).filter((m: any) => (parseDateOnly(m.proxima_data) ?? hoje) <= hoje).length;
       return { total, emUso, livres: Math.max(total - emUso, 0), vencidas, reservas: reservasRes.count ?? 0 };
     },
   });
@@ -37,7 +43,9 @@ function Dashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Painel da Frota</h1>
-        <p className="text-sm text-muted-foreground">Olá{user ? `, ${user.email?.split("@")[0]}` : ""}. Selecione uma ação abaixo.</p>
+        <p className="text-sm text-muted-foreground">
+          {greeting()}{firstName ? `, ${firstName}` : ""}. Selecione uma ação abaixo.
+        </p>
       </div>
 
       {profileLoaded && !aprovado && (
@@ -51,7 +59,7 @@ function Dashboard() {
       )}
 
       {(stats?.vencidas ?? 0) > 0 && (
-        <Link to="/app/manutencao">
+        <Link to="/app/manutencao" className="block">
           <Card className="p-4 bg-destructive/10 border-destructive/40 flex gap-3 items-start hover:shadow-elegant transition-shadow">
             <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5"/>
             <div className="text-sm flex-1">
@@ -65,7 +73,7 @@ function Dashboard() {
 
       {/* Hero — Viaturas disponíveis */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <Link to="/app/disponiveis">
+        <Link to="/app/disponiveis" className="block">
           <Card className="relative overflow-hidden border-0 shadow-elegant bg-gradient-hero text-sidebar-foreground p-5 group">
             <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-accent/15 blur-2xl" />
             <div className="absolute -right-2 -bottom-8 h-24 w-24 rounded-full bg-primary-foreground/5 blur-xl" />
@@ -78,11 +86,12 @@ function Dashboard() {
                 <div className="font-display font-bold text-xl leading-tight">Viaturas Disponíveis</div>
                 <div className="text-xs text-sidebar-foreground/80 mt-0.5">Status, saída e retorno</div>
               </div>
-              <div className="grid grid-cols-3 gap-2 pr-1">
-                <Stat n={stats?.total} label="Frota" />
-                <Stat n={stats?.livres} label="Livres" tone="success" />
-                <Stat n={stats?.emUso} label="Uso" tone="warning" />
-              </div>
+              <ArrowRight className="h-5 w-5 text-sidebar-foreground/60 shrink-0 transition-transform group-hover:translate-x-0.5" />
+            </div>
+            <div className="relative mt-4 grid grid-cols-3 divide-x divide-sidebar-foreground/15 rounded-xl bg-black/15 py-2.5">
+              <Stat n={stats?.total} label="Na frota" />
+              <Stat n={stats?.livres} label="Livres" tone="success" />
+              <Stat n={stats?.emUso} label="Em uso" tone="warning" />
             </div>
           </Card>
         </Link>
@@ -107,6 +116,8 @@ function Dashboard() {
           <ActionTile to="/app/manutencao" icon={Wrench} label="Manutenção" desc="Revisões e vencimentos" tone="neutral" />
           <ActionTile to="/app/documentos" icon={FileText} label="Documentos" desc="CRLV, seguro, IPVA" tone="neutral" />
           <ActionTile to="/app/multas" icon={FileWarning} label="Multas" desc="Infrações registradas" tone="destructive" />
+          <ActionTile to="/app/viaturas" icon={Car} label="Viaturas" desc={isAdmin ? "Cadastro e QR Codes" : "Frota cadastrada"} tone="neutral" />
+          <ActionTile to="/app/condutores" icon={Users} label="Condutores" desc="Fichas e validade da CNH" tone="neutral" />
         </div>
       </Section>
 
@@ -114,7 +125,7 @@ function Dashboard() {
       {isAdmin && (
         <Section title="Administração">
           <div className="grid grid-cols-1 gap-3">
-            <Link to="/app/admin">
+            <Link to="/app/admin" className="block">
               <Card className="p-4 flex items-center gap-3 shadow-card hover:shadow-elegant transition-all hover:-translate-y-0.5">
                 <div className="h-11 w-11 rounded-xl bg-accent/15 border border-accent/30 flex items-center justify-center">
                   <ShieldCheck className="h-5 w-5 text-accent" />
@@ -128,7 +139,7 @@ function Dashboard() {
             </Link>
             {isMaster && (
               <>
-                <Link to="/app/dashboard">
+                <Link to="/app/dashboard" className="block">
                   <Card className="p-4 flex items-center gap-3 shadow-card hover:shadow-elegant transition-all hover:-translate-y-0.5 bg-gradient-hero text-sidebar-foreground border-0">
                     <div className="h-11 w-11 rounded-xl bg-accent/20 border border-accent/40 flex items-center justify-center">
                       <BarChart3 className="h-5 w-5 text-accent" />
@@ -140,7 +151,7 @@ function Dashboard() {
                     <ArrowRight className="h-4 w-4 text-sidebar-foreground/70" />
                   </Card>
                 </Link>
-                <Link to="/app/auditoria">
+                <Link to="/app/auditoria" className="block">
                   <Card className="p-4 flex items-center gap-3 shadow-card hover:shadow-elegant transition-all hover:-translate-y-0.5">
                     <div className="h-11 w-11 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center">
                       <Activity className="h-5 w-5 text-primary" />
@@ -174,8 +185,8 @@ function Stat({ n, label, tone }: { n?: number; label: string; tone?: "success" 
   const color = tone === "success" ? "text-success" : tone === "warning" ? "text-accent" : "text-sidebar-foreground";
   return (
     <div className="text-center">
-      <div className={`font-display font-bold text-lg leading-none ${color}`}>{n ?? "—"}</div>
-      <div className="text-[9px] uppercase tracking-wider text-sidebar-foreground/60 mt-0.5">{label}</div>
+      <div className={`font-display font-bold text-2xl leading-none ${color}`}>{n ?? <span className="inline-block h-5 w-6 rounded bg-sidebar-foreground/15 animate-pulse" />}</div>
+      <div className="text-[10px] uppercase tracking-wider text-sidebar-foreground/65 mt-1">{label}</div>
     </div>
   );
 }
@@ -203,7 +214,7 @@ function ActionTile({
   }[tone];
 
   return (
-    <Link to={to as any}>
+    <Link to={to as any} className="block h-full">
       <Card className={`p-4 h-full shadow-card hover:shadow-elegant transition-all hover:-translate-y-0.5 active:translate-y-0 ${styles}`}>
         <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-3 ${iconWrap}`}>
           <Icon className="h-5 w-5" />

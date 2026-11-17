@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { parseDateOnly, monthKeyLocal } from "@/lib/format";
 import {
   BarChart3, TrendingUp, Fuel, AlertTriangle, Wrench, FileWarning, Users, Car,
 } from "lucide-react";
@@ -36,10 +37,10 @@ function DashboardExec() {
       const fmt = (d: Date) => d.toLocaleDateString("pt-BR", { month: "short" });
       for (let i = 5; i >= 0; i--) {
         const d = new Date(); d.setMonth(d.getMonth() - i); d.setDate(1);
-        const key = d.toISOString().slice(0, 7);
-        const ab = (abast.data ?? []).filter((a: any) => a.data_abastecimento.slice(0, 7) === key)
+        const key = monthKeyLocal(d);
+        const ab = (abast.data ?? []).filter((a: any) => monthKeyLocal(new Date(a.data_abastecimento)) === key)
           .reduce((s: number, a: any) => s + Number(a.valor_total ?? 0), 0);
-        const ut = (util.data ?? []).filter((u: any) => u.data_saida.slice(0, 7) === key).length;
+        const ut = (util.data ?? []).filter((u: any) => monthKeyLocal(new Date(u.data_saida)) === key).length;
         meses.push({ mes: fmt(d), abast: Math.round(ab), util: ut });
       }
 
@@ -54,8 +55,8 @@ function DashboardExec() {
 
       const hoje = new Date(); hoje.setHours(0,0,0,0);
       const em30 = new Date(hoje); em30.setDate(em30.getDate() + 30);
-      const manutVenc = (manut.data ?? []).filter((m: any) => m.proxima_data && new Date(m.proxima_data) <= hoje).length;
-      const cnhVenc = (cond.data ?? []).filter((c: any) => c.cnh_validade && new Date(c.cnh_validade) <= em30).length;
+      const manutVenc = (manut.data ?? []).filter((m: any) => m.proxima_data && parseDateOnly(m.proxima_data)! <= hoje).length;
+      const cnhVenc = (cond.data ?? []).filter((c: any) => c.cnh_validade && parseDateOnly(c.cnh_validade)! <= em30).length;
 
       const totalAbast = (abast.data ?? []).reduce((s: number, a: any) => s + Number(a.valor_total ?? 0), 0);
       const totalLitros = (abast.data ?? []).reduce((s: number, a: any) => s + Number(a.litros ?? 0), 0);

@@ -151,3 +151,11 @@ SUPABASE_PROJECT_ID="ecdwhafgltsfikfumyto"
 * Datas e horas de formulário: usar `nowLocalInput()` e `todayLocal()` de `src/lib/format.ts`. Nunca `toISOString().slice(...)` para valor padrão de campo, porque devolve UTC (3 h à frente em Brasília).
 * KM e valores numéricos: validar com `parseKm()` e `parsePositiveDecimal()` antes de gravar.
 * Dependências: manter `@tanstack/react-start` em `~1.168.x` enquanto o projeto usar Vite 7 (a 1.169.x exige Vite 8). Não usar versões com falha de segurança conhecida (a Vercel bloqueia o deploy).
+* Datas só-dia (colunas `date`, ex.: `proxima_data`, `cnh_validade`): usar `parseDateOnly()`/`formatDateBR()`. `new Date("AAAA-MM-DD")` é UTC e mostra o dia anterior no Brasil.
+* Parâmetros de URL numéricos (`?qr=1`): o roteador converte para número; usar `z.coerce.string()` no `validateSearch`.
+
+## 9. QR Code das viaturas e primeiro acesso
+* Admin gera/imprime o QR em Viaturas (ícone QR). O QR aponta para `/app/saida?viaturaId=<id>&qr=1`; a saída só abre após escanear (scanner `html5-qrcode` no app ou câmera do celular). Admin/master pode escolher manualmente. A trava é só no app (o banco não valida).
+* Contas com `user_metadata.must_change_password = true` são redirecionadas para `/trocar-senha` até definirem nova senha.
+* Emails master automáticos no cadastro: brunno.almeida, cosme.marques, jorge.silva (`@mj.gov.br`) — ver `handle_new_user` e `src/lib/auth.tsx`.
+

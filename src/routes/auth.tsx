@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { DevCredit } from "@/components/DevCredit";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { motion } from "framer-motion";
@@ -195,6 +196,7 @@ function AuthPage() {
           <p className="text-center text-xs text-sidebar-foreground/60 mt-6">
             Acesso restrito ao pessoal autorizado
           </p>
+          <DevCredit className="mt-4 text-sidebar-foreground" />
         </motion.div>
       </div>
     </div>

@@ -56,3 +56,53 @@ export function parsePositiveDecimal(v: string): number | null {
   const n = Number(v.trim().replace(",", "."));
   return Number.isFinite(n) && n > 0 ? n : null;
 }
+
+/** Valida CPF pelos dígitos verificadores (rejeita 111.111.111-11 etc.). */
+export function isValidCPF(v: string): boolean {
+  const d = onlyDigits(v);
+  if (d.length !== 11 || /^(\d)\1{10}$/.test(d)) return false;
+  const calc = (len: number) => {
+    let sum = 0;
+    for (let i = 0; i < len; i++) sum += Number(d[i]) * (len + 1 - i);
+    const r = (sum * 10) % 11;
+    return r === 10 ? 0 : r;
+  };
+  return calc(9) === Number(d[9]) && calc(10) === Number(d[10]);
+}
+
+/** Interpreta "AAAA-MM-DD" como data LOCAL (new Date("AAAA-MM-DD") é UTC e mostra o dia anterior no Brasil). */
+export function parseDateOnly(v: string | null | undefined): Date | null {
+  if (!v) return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(v);
+  if (!m) {
+    const d = new Date(v);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+  return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+}
+
+/** Formata data sem hora (campo "date") em dd/mm/aaaa, sem deslocar o dia por fuso. */
+export function formatDateBR(v: string | null | undefined): string {
+  const d = parseDateOnly(v);
+  return d ? d.toLocaleDateString("pt-BR") : "—";
+}
+
+/** Chave AAAA-MM do mês LOCAL (evita virar o mês por causa do UTC). */
+export function monthKeyLocal(d: Date): string {
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`;
+}
+
+/** Máscara de telefone brasileiro: (11) 91234-5678. */
+export function formatPhone(v: string): string {
+  const d = onlyDigits(v).slice(0, 11);
+  if (d.length <= 2) return d;
+  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+}
+
+/** Saudação conforme a hora local. */
+export function greeting(d: Date = new Date()): string {
+  const h = d.getHours();
+  return h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite";
+}

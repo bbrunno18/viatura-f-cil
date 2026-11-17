@@ -1,5 +1,6 @@
 import { Outlet, createRootRoute, HeadContent, Scripts, Link } from "@tanstack/react-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -33,10 +34,16 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "theme-color", content: "#1a2a4a" },
-      { title: "FrotaCop — Controle de Viaturas" },
-      { name: "description", content: "Registro de utilização, abastecimento e localização da frota." },
+      { title: "Easy Patrol — Frota COLOG" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "Easy Patrol" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "description", content: "Controle de saídas, retornos, checklists, abastecimentos e localização das viaturas oficiais." },
     ],
     links: [
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "icon", type: "image/png", href: "/icon-192.png" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
@@ -66,7 +73,18 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  const [qc] = useState(() => new QueryClient());
+  const [qc] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false, staleTime: 15_000 } },
+        queryCache: new QueryCache({
+          onError: (error) => {
+            const msg = error instanceof Error ? error.message : "Erro ao carregar dados";
+            toast.error("Não foi possível carregar os dados", { id: "query-error", description: msg });
+          },
+        }),
+      }),
+  );
   return (
     <QueryClientProvider client={qc}>
       <PreferencesProvider>

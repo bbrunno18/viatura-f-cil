@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { todayLocal } from "@/lib/format";
+import { todayLocal, formatDateBR } from "@/lib/format";
 
 export const Route = createFileRoute("/app/multas")({
   component: Multas,
@@ -162,7 +162,7 @@ function Multas() {
                 <div className="min-w-0 flex-1">
                   <div className="font-semibold truncate">{m.descricao}</div>
                   <div className="text-xs text-muted-foreground">{viaturaNome(m.viatura_id)} • {condNome(m.condutor_id)}</div>
-                  <div className="text-xs text-muted-foreground">{new Date(m.data_infracao).toLocaleDateString("pt-BR")} {m.local ? `• ${m.local}` : ""}</div>
+                  <div className="text-xs text-muted-foreground">{formatDateBR(m.data_infracao)} {m.local ? `• ${m.local}` : ""}</div>
                 </div>
                 <div className="text-right shrink-0">
                   <div className="font-display font-bold">R$ {Number(m.valor).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</div>

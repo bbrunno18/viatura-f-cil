@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { exportPDF, exportXLSX } from "@/lib/exporters";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime, monthKeyLocal } from "@/lib/format";
 
 export const Route = createFileRoute("/app/relatorios")({
   component: Relatorios,
@@ -31,7 +31,7 @@ function Relatorios() {
   const porMes = (() => {
     const m = new Map<string, number>();
     for (const u of data?.util ?? []) {
-      const k = new Date(u.data_saida).toISOString().slice(0, 7);
+      const k = monthKeyLocal(new Date(u.data_saida));
       m.set(k, (m.get(k) ?? 0) + 1);
     }
     return Array.from(m.entries()).slice(-6).map(([mes, qtd]) => ({ mes, qtd }));

@@ -11,14 +11,14 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { formatCPF, onlyDigits } from "@/lib/format";
+import { formatCPF, onlyDigits, parseDateOnly, isValidCPF, formatPhone } from "@/lib/format";
 
 export const Route = createFileRoute("/app/condutores")({
   component: Condutores,
 });
 
 const schema = z.object({
-  cpf: z.string().refine((v) => onlyDigits(v).length === 11, "CPF deve ter 11 dígitos"),
+  cpf: z.string().refine((v) => onlyDigits(v).length === 11, "CPF deve ter 11 dígitos").refine(isValidCPF, "CPF inválido"),
   nome: z.string().trim().min(2, "Informe o nome").max(100),
 });
 
@@ -42,6 +42,11 @@ function Condutores() {
     e.preventDefault();
     const parsed = schema.safeParse({ cpf: form.cpf, nome: form.nome });
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
+    const tel = onlyDigits(form.telefone);
+    if (tel && (tel.length < 10 || tel.length > 11)) return toast.error("Telefone inválido. Use DDD + número.");
+    if (form.cnh_validade && parseDateOnly(form.cnh_validade)! < new Date(new Date().setHours(0, 0, 0, 0))) {
+      return toast.error("A CNH informada está vencida. Cadastre com a validade renovada.");
+    }
     setBusy(true);
     const { error } = await supabase.from("condutores").insert({
       cpf: onlyDigits(parsed.data.cpf),
@@ -77,7 +82,7 @@ function Condutores() {
             </div>
             <div>
               <Label>Telefone</Label>
-              <Input value={form.telefone} onChange={(e) => setForm({ ...form, telefone: e.target.value })} placeholder="(00) 00000-0000"/>
+              <Input value={form.telefone} onChange={(e) => setForm({ ...form, telefone: formatPhone(e.target.value) })} placeholder="(61) 99999-9999" inputMode="tel"/>
             </div>
           </div>
           <div>
@@ -87,7 +92,7 @@ function Condutores() {
           <div className="grid grid-cols-3 gap-3">
             <div className="col-span-2">
               <Label>CNH</Label>
-              <Input value={form.cnh_numero} onChange={(e) => setForm({ ...form, cnh_numero: e.target.value })}/>
+              <Input value={form.cnh_numero} onChange={(e) => setForm({ ...form, cnh_numero: onlyDigits(e.target.value).slice(0, 11) })} inputMode="numeric" placeholder="11 dígitos"/>
             </div>
             <div>
               <Label>Cat.</Label>
@@ -118,7 +123,7 @@ function Condutores() {
         ) : (
           <div className="space-y-2">
             {data?.map((c: any) => {
-              const val = c.cnh_validade ? new Date(c.cnh_validade) : null;
+              const val = parseDateOnly(c.cnh_validade);
               const vencida = val && val < hoje;
               const vencendo = val && !vencida && val <= em30;
               return (

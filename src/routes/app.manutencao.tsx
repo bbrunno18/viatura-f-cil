@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { logAction } from "@/lib/audit";
 
+import { parseDateOnly, formatDateBR } from "@/lib/format";
 export const Route = createFileRoute("/app/manutencao")({
   component: Manutencao,
 });
@@ -40,7 +41,7 @@ function Manutencao() {
   });
 
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-  const vencidas = (lists?.manutencoes ?? []).filter((m: any) => m.proxima_data && new Date(m.proxima_data) <= hoje);
+  const vencidas = (lists?.manutencoes ?? []).filter((m: any) => m.proxima_data && parseDateOnly(m.proxima_data)! <= hoje);
 
   async function criar(e: React.FormEvent) {
     e.preventDefault();
@@ -116,7 +117,7 @@ function Manutencao() {
       <div className="space-y-3">
         {lists?.manutencoes.length === 0 && <Card className="p-4 text-center text-sm text-muted-foreground">Nenhum registro.</Card>}
         {lists?.manutencoes.map((m: any) => {
-          const vencida = m.proxima_data && new Date(m.proxima_data) <= hoje;
+          const vencida = m.proxima_data && parseDateOnly(m.proxima_data)! <= hoje;
           return (
             <Card key={m.id} className={`p-4 shadow-card ${vencida ? "border-destructive/40" : ""}`}>
               <div className="flex items-start gap-3">
@@ -127,7 +128,7 @@ function Manutencao() {
                     {vencida && <span className="text-[10px] uppercase font-bold text-destructive border border-destructive/40 rounded-full px-2 py-0.5">Vencida</span>}
                   </div>
                   <div className="text-xs text-muted-foreground">{m.viaturas?.modelo}{m.viaturas?.placa ? ` · ${m.viaturas.placa}` : ""}</div>
-                  <div className="text-xs mt-1">Realizada: {new Date(m.data_servico).toLocaleDateString("pt-BR")}{m.proxima_data ? ` · Próxima: ${new Date(m.proxima_data).toLocaleDateString("pt-BR")}` : ""}</div>
+                  <div className="text-xs mt-1">Realizada: {formatDateBR(m.data_servico)}{m.proxima_data ? ` · Próxima: ${formatDateBR(m.proxima_data)}` : ""}</div>
                   {m.descricao && <div className="text-xs text-muted-foreground mt-1">{m.descricao}</div>}
                   {m.custo && <div className="text-xs font-medium mt-1">R$ {Number(m.custo).toFixed(2)}</div>}
                 </div>

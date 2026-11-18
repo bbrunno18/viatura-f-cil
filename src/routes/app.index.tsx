@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   Car, Fuel, Plus, Clock, AlertTriangle, ArrowRight, ClipboardList,
-  ShieldCheck, Users, Map, CalendarClock, Wrench, BarChart3, Activity, FileWarning, FileText,
+  ShieldCheck, Users, MapPin, ExternalLink, CalendarClock, Wrench, BarChart3, Activity, FileWarning, FileText,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -38,6 +38,22 @@ function Dashboard() {
       return { total, emUso, livres: Math.max(total - emUso, 0), vencidas, reservas: reservasRes.count ?? 0 };
     },
   });
+
+  const { data: ao_vivo } = useQuery({
+    queryKey: ["dashboard-ao-vivo"],
+    refetchInterval: 15000,
+    queryFn: async () => {
+      const desde = new Date(Date.now() - 3 * 60 * 1000).toISOString();
+      const { data } = await (supabase as any)
+        .from("viatura_posicao")
+        .select("latitude, longitude, atualizado_em")
+        .gte("atualizado_em", desde)
+        .order("atualizado_em", { ascending: false });
+      return (data ?? []) as { latitude: number; longitude: number }[];
+    },
+  });
+  const nAoVivo = ao_vivo?.length ?? 0;
+  const primeira = ao_vivo?.[0];
 
   return (
     <div className="space-y-6">
@@ -97,6 +113,39 @@ function Dashboard() {
         </Link>
       </motion.div>
 
+      {/* Localização ao vivo */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+        <Card className="relative overflow-hidden p-4 shadow-elegant border-accent/30 bg-card">
+          <div className="absolute -left-8 -bottom-10 h-28 w-28 rounded-full bg-accent/10 blur-2xl" />
+          <Link to="/app/mapa" className="relative flex items-center gap-3.5 press">
+            <div className="relative h-14 w-14 shrink-0">
+              {nAoVivo > 0 && <span className="absolute inset-0 rounded-2xl bg-accent/30 animate-ping" />}
+              <div className="relative h-14 w-14 rounded-2xl bg-gradient-accent text-accent-foreground flex items-center justify-center shadow-card">
+                <MapPin className="h-7 w-7" />
+              </div>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Localização</div>
+              <div className="font-display font-bold text-lg leading-tight">Onde está a frota agora</div>
+              <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1.5">
+                <span className={`h-2 w-2 rounded-full ${nAoVivo > 0 ? "bg-success animate-pulse" : "bg-muted-foreground/40"}`} />
+                {nAoVivo > 0 ? `${nAoVivo} viatura${nAoVivo > 1 ? "s" : ""} ao vivo` : "Nenhuma viatura em movimento"}
+              </div>
+            </div>
+            <ArrowRight className="h-5 w-5 text-muted-foreground shrink-0" />
+          </Link>
+          {primeira && (
+            <a
+              href={`https://www.google.com/maps?q=${primeira.latitude},${primeira.longitude}`}
+              target="_blank" rel="noreferrer"
+              className="relative mt-3 flex items-center justify-center gap-1.5 rounded-xl border border-border bg-secondary/60 py-2 text-xs font-semibold text-primary press"
+            >
+              <ExternalLink className="h-3.5 w-3.5" /> Abrir no Google Maps
+            </a>
+          )}
+        </Card>
+      </motion.div>
+
       {/* Operação */}
       <Section title="Operação">
         <div className="grid grid-cols-2 gap-3">
@@ -110,14 +159,13 @@ function Dashboard() {
       {/* Visão geral */}
       <Section title="Visão geral">
         <div className="grid grid-cols-2 gap-3">
-          <ActionTile to="/app/mapa" icon={Map} label="Mapa ao vivo" desc="Localização em tempo real" tone="primary" />
           <ActionTile to="/app/relatorios" icon={BarChart3} label="Relatórios" desc="Gráficos e exportação" tone="accent" />
           <ActionTile to="/app/historico" icon={ClipboardList} label="Histórico" desc="Utilizações anteriores" tone="neutral" />
           <ActionTile to="/app/manutencao" icon={Wrench} label="Manutenção" desc="Revisões e vencimentos" tone="neutral" />
           <ActionTile to="/app/documentos" icon={FileText} label="Documentos" desc="CRLV, seguro, IPVA" tone="neutral" />
           <ActionTile to="/app/multas" icon={FileWarning} label="Multas" desc="Infrações registradas" tone="destructive" />
           <ActionTile to="/app/viaturas" icon={Car} label="Viaturas" desc={isAdmin ? "Cadastro e QR Codes" : "Frota cadastrada"} tone="neutral" />
-          <ActionTile to="/app/condutores" icon={Users} label="Condutores" desc="Fichas e validade da CNH" tone="neutral" />
+          <ActionTile to="/app/condutores" icon={Users} label="Condutores" desc="Fichas e validade da CNH" tone="neutral" wide />
         </div>
       </Section>
 
@@ -192,8 +240,9 @@ function Stat({ n, label, tone }: { n?: number; label: string; tone?: "success" 
 }
 
 function ActionTile({
-  to, icon: Icon, label, desc, tone,
+  to, icon: Icon, label, desc, tone, wide,
 }: {
+  wide?: boolean;
   to: string;
   icon: React.ComponentType<{ className?: string }>;
   label: string;
@@ -214,7 +263,7 @@ function ActionTile({
   }[tone];
 
   return (
-    <Link to={to as any} className="block h-full">
+    <Link to={to as any} className={`block h-full ${wide ? "col-span-2" : ""}`}>
       <Card className={`p-4 h-full shadow-card hover:shadow-elegant transition-all hover:-translate-y-0.5 press ${styles}`}>
         <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-3 ${iconWrap}`}>
           <Icon className="h-5 w-5" />

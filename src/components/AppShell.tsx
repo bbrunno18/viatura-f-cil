@@ -51,10 +51,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="bg-gradient-hero text-sidebar-foreground safe-top sticky top-0 z-30 shadow-elegant">
+      <header className="bg-gradient-hero bg-hero-pattern text-sidebar-foreground safe-top sticky top-0 z-30 shadow-elegant border-b border-accent/30">
         <div className="max-w-2xl mx-auto px-4 py-2 flex items-center justify-between">
           <Link to="/app" className="flex items-center gap-2">
-            <div className="h-11 w-11 rounded-xl bg-white flex items-center justify-center shadow-card overflow-hidden">
+            <div className="h-11 w-11 rounded-xl bg-white flex items-center justify-center shadow-card overflow-hidden ring-2 ring-accent/60">
               <img src={logoMJ} alt="Easy Patrol" className="h-full w-full object-cover" />
             </div>
             <div className="leading-tight">
@@ -123,7 +123,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Bottom Nav */}
-      <nav className="fixed bottom-0 inset-x-0 z-30 bg-card/95 backdrop-blur border-t border-border safe-bottom" aria-label="Navegação principal">
+      <nav className="fixed bottom-0 inset-x-0 z-30 glass border-t border-border safe-bottom shadow-[0_-8px_24px_-16px_rgba(0,0,0,.25)]" aria-label="Navegação principal">
         <div className="max-w-2xl mx-auto grid grid-cols-5 items-end">
           {navLeft.map((item) => <NavLink key={item.to} item={item} pathname={location.pathname} />)}
           <Link
@@ -151,11 +151,13 @@ function NavLink({ item, pathname }: { item: { to: string; label: string; icon: 
       to={item.to}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-colors",
+        "flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors press",
         active ? "text-primary" : "text-muted-foreground hover:text-foreground",
       )}
     >
-      <Icon className={cn("h-5 w-5", active && "stroke-[2.5]")} />
+      <span className={cn("relative flex h-7 w-12 items-center justify-center rounded-full transition-colors", active && "bg-primary/12")}>
+        <Icon className={cn("h-5 w-5", active && "stroke-[2.5]")} />
+      </span>
       {item.label}
     </Link>
   );

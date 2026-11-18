@@ -98,7 +98,7 @@ function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-hero flex flex-col">
+    <div className="min-h-screen bg-gradient-hero bg-hero-pattern flex flex-col">
       <div className="flex-1 flex items-center justify-center p-5 safe-top">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -107,16 +107,16 @@ function AuthPage() {
           className="w-full max-w-md"
         >
           <div className="text-center mb-7 text-sidebar-foreground">
-            <div className="mx-auto h-24 w-24 rounded-2xl bg-white flex items-center justify-center shadow-elegant mb-4 overflow-hidden">
+            <div className="mx-auto h-24 w-24 rounded-3xl bg-white flex items-center justify-center shadow-elegant mb-4 overflow-hidden ring-4 ring-accent/50">
               <img src={logoMJ} alt="Easy Patrol" className="h-full w-full object-cover" />
             </div>
-            <h1 className="font-display text-3xl font-bold">Easy Patrol{secao && <span className="text-accent"> {secao}</span>}</h1>
+            <h1 className="font-display text-4xl font-bold tracking-tight">Easy Patrol{secao && <span className="text-accent"> {secao}</span>}</h1>
             <p className="text-sm text-sidebar-foreground/75 mt-1 tracking-wide uppercase">
               Controle inteligente de viaturas
             </p>
           </div>
 
-          <div className="bg-card rounded-2xl shadow-elegant p-6">
+          <div className="bg-card/95 backdrop-blur rounded-3xl shadow-elegant p-6 border border-white/10 ring-1 ring-black/5">
             {mode === "forgot" ? (
               <form onSubmit={handleForgot} className="space-y-4">
                 <button type="button" onClick={() => setMode("auth")} className="inline-flex items-center text-sm text-muted-foreground mb-1">
@@ -128,7 +128,7 @@ function AuthPage() {
                   <Label htmlFor="email-f">E-mail</Label>
                   <Input id="email-f" name="email" type="email" required />
                 </div>
-                <Button type="submit" className="w-full h-11 bg-gradient-primary" disabled={busy}>
+                <Button type="submit" className="w-full h-12 text-base font-semibold bg-gradient-primary shadow-card press" disabled={busy}>
                   {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Enviar link"}
                 </Button>
               </form>
@@ -149,7 +149,7 @@ function AuthPage() {
                       <Label htmlFor="password">Senha</Label>
                       <Input id="password" name="password" type="password" autoComplete="current-password" required />
                     </div>
-                    <Button type="submit" className="w-full h-11 bg-gradient-primary" disabled={busy}>
+                    <Button type="submit" className="w-full h-12 text-base font-semibold bg-gradient-primary shadow-card press" disabled={busy}>
                       {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Entrar"}
                     </Button>
                     <button
@@ -180,7 +180,7 @@ function AuthPage() {
                       <Label htmlFor="password-s">Senha</Label>
                       <Input id="password-s" name="password" type="password" autoComplete="new-password" minLength={6} required />
                     </div>
-                    <Button type="submit" className="w-full h-11 bg-gradient-primary" disabled={busy}>
+                    <Button type="submit" className="w-full h-12 text-base font-semibold bg-gradient-primary shadow-card press" disabled={busy}>
                       {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Criar conta"}
                     </Button>
                     <p className="text-xs text-muted-foreground text-center">

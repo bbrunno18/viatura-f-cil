@@ -100,8 +100,8 @@
   --gradient-accent: linear-gradient(135deg, oklch(0.74 0.15 75) 0%, oklch(0.65 0.17 50) 100%);
   --gradient-hero: linear-gradient(160deg, oklch(0.22 0.05 252) 0%, oklch(0.32 0.09 255) 60%, oklch(0.45 0.14 258) 100%);
 
-  --shadow-elegant: 0 12px 40px -16px color-mix(in oklab, var(--primary) 35%, transparent);
-  --shadow-card: 0 2px 8px -2px color-mix(in oklab, var(--primary) 14%, transparent);
+  --shadow-elegant: 0 18px 44px -18px color-mix(in oklab, var(--primary) 45%, transparent), 0 2px 6px -2px color-mix(in oklab, var(--primary) 18%, transparent);
+  --shadow-card: 0 1px 2px color-mix(in oklab, var(--primary) 8%, transparent), 0 6px 16px -8px color-mix(in oklab, var(--primary) 18%, transparent);
 }
 
 /* Acessibilidade — alto contraste */
@@ -150,7 +150,11 @@
 
 @layer base {
   * { border-color: var(--color-border); }
-  html, body { -webkit-font-smoothing: antialiased; }
+  html { scroll-behavior: smooth; }
+  html, body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  ::selection { background: color-mix(in oklab, var(--accent) 45%, transparent); }
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 6px; }
+  button, a { -webkit-tap-highlight-color: transparent; }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
@@ -165,6 +169,24 @@
   .bg-gradient-accent { background: var(--gradient-accent); }
   .shadow-elegant { box-shadow: var(--shadow-elegant); }
   .shadow-card { box-shadow: var(--shadow-card); }
+  .bg-hero-pattern {
+    background-image:
+      radial-gradient(60% 50% at 85% 0%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 70%),
+      radial-gradient(50% 40% at 0% 100%, color-mix(in oklab, var(--primary-glow) 40%, transparent), transparent 70%),
+      linear-gradient(color-mix(in oklab, white 5%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in oklab, white 5%, transparent) 1px, transparent 1px),
+      var(--gradient-hero);
+    background-size: auto, auto, 32px 32px, 32px 32px, auto;
+  }
+  .glass { backdrop-filter: blur(14px) saturate(140%); background-color: color-mix(in oklab, var(--card) 82%, transparent); }
+  .tabular { font-variant-numeric: tabular-nums; }
+  .press { transition: transform .15s ease, box-shadow .2s ease; }
+  .press:active { transform: scale(.97); }
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
   .safe-top { padding-top: env(safe-area-inset-top); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }

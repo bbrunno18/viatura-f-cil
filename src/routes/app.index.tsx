@@ -42,7 +42,7 @@ function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Painel da Frota</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Painel da Frota</h1>
         <p className="text-sm text-muted-foreground">
           {greeting()}{firstName ? `, ${firstName}` : ""}. Selecione uma ação abaixo.
         </p>
@@ -74,7 +74,7 @@ function Dashboard() {
       {/* Hero — Viaturas disponíveis */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <Link to="/app/disponiveis" className="block">
-          <Card className="relative overflow-hidden border-0 shadow-elegant bg-gradient-hero text-sidebar-foreground p-5 group">
+          <Card className="relative overflow-hidden border-0 shadow-elegant bg-gradient-hero bg-hero-pattern text-sidebar-foreground p-5 group press">
             <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-accent/15 blur-2xl" />
             <div className="absolute -right-2 -bottom-8 h-24 w-24 rounded-full bg-primary-foreground/5 blur-xl" />
             <div className="relative flex items-center gap-4">
@@ -175,7 +175,7 @@ function Dashboard() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground font-bold mb-2">{title}</div>
+      <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground font-bold mb-2.5"><span className="h-3 w-1 rounded-full bg-accent" />{title}</div>
       {children}
     </div>
   );
@@ -185,7 +185,7 @@ function Stat({ n, label, tone }: { n?: number; label: string; tone?: "success" 
   const color = tone === "success" ? "text-success" : tone === "warning" ? "text-accent" : "text-sidebar-foreground";
   return (
     <div className="text-center">
-      <div className={`font-display font-bold text-2xl leading-none ${color}`}>{n ?? <span className="inline-block h-5 w-6 rounded bg-sidebar-foreground/15 animate-pulse" />}</div>
+      <div className={`font-display font-bold text-3xl leading-none tabular ${color}`}>{n ?? <span className="inline-block h-5 w-6 rounded bg-sidebar-foreground/15 animate-pulse" />}</div>
       <div className="text-[10px] uppercase tracking-wider text-sidebar-foreground/65 mt-1">{label}</div>
     </div>
   );
@@ -215,7 +215,7 @@ function ActionTile({
 
   return (
     <Link to={to as any} className="block h-full">
-      <Card className={`p-4 h-full shadow-card hover:shadow-elegant transition-all hover:-translate-y-0.5 active:translate-y-0 ${styles}`}>
+      <Card className={`p-4 h-full shadow-card hover:shadow-elegant transition-all hover:-translate-y-0.5 press ${styles}`}>
         <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-3 ${iconWrap}`}>
           <Icon className="h-5 w-5" />
         </div>

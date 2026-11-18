@@ -110,7 +110,7 @@ function Dashboard() {
       {/* Visão geral */}
       <Section title="Visão geral">
         <div className="grid grid-cols-2 gap-3">
-          <ActionTile to="/app/mapa" icon={Map} label="Mapa ao vivo" desc="Última posição GPS" tone="primary" />
+          <ActionTile to="/app/mapa" icon={Map} label="Mapa ao vivo" desc="Localização em tempo real" tone="primary" />
           <ActionTile to="/app/relatorios" icon={BarChart3} label="Relatórios" desc="Gráficos e exportação" tone="accent" />
           <ActionTile to="/app/historico" icon={ClipboardList} label="Histórico" desc="Utilizações anteriores" tone="neutral" />
           <ActionTile to="/app/manutencao" icon={Wrench} label="Manutenção" desc="Revisões e vencimentos" tone="neutral" />

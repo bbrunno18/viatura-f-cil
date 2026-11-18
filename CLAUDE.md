@@ -168,3 +168,8 @@ SUPABASE_PROJECT_ID="ecdwhafgltsfikfumyto"
 * Fluxo de venda: Master cria a empresa em Admin > Empresas clientes (`admin_criar_organizacao`) → cria o administrador dela em Usuários > Adicionar usuário (escolhendo a empresa) → o admin cadastra viaturas/condutores e usuários da sua empresa. Funcionários também podem se cadastrar com o **código da empresa** (`codigo_empresa_valido`, `handle_new_user`); ficam pendentes até um admin da empresa aprovar.
 * Viaturas começam vazias: cada empresa cadastra as suas (somente admin). O nome da empresa aparece no cabeçalho (`useSecao` agora lê `organizacoes.nome`; `SecaoSettings`/`app_settings.secao_nome` foram descontinuados).
 * Migrações: `20261118120000_viaturas_por_secretaria.sql` (modelo antigo, substituído) e `20261118130000_empresas_multitenant.sql` (atual). Já aplicadas no banco do Lovable Cloud.
+
+## 11. Localização ao vivo
+* Enquanto o usuário tem saída em aberto, `useRastreamento` (montado em `RastreamentoBanner` no layout `/app`) usa `watchPosition` e faz upsert em `viatura_posicao` (1 linha por viatura; no máx. a cada ~15 s). Só funciona com o app/aba aberto (usa Wake Lock quando disponível); não é rastreador de hardware.
+* `/app/mapa` assina o Realtime da tabela e mostra "ao vivo" se a posição tem < 3 min; cada viatura tem link "Google Maps" (`https://www.google.com/maps?q=lat,lng`) e botão copiar. Sem sinal, mostra a última posição/estacionamento.
+* RLS: só o condutor da saída aberta grava; leitura restrita por empresa (`org_scope`). Migração `20261118140000_posicao_ao_vivo.sql` (já aplicada).

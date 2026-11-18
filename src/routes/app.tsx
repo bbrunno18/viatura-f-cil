@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, Navigate } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
 import { AppShell } from "@/components/AppShell";
 import { Loader2 } from "lucide-react";
+import { RastreamentoBanner } from "@/components/RastreamentoBanner";
 
 export const Route = createFileRoute("/app")({
   component: AppLayout,
@@ -20,6 +21,7 @@ function AppLayout() {
   if (user.user_metadata?.must_change_password === true) return <Navigate to="/trocar-senha" />;
   return (
     <AppShell>
+      <RastreamentoBanner />
       <Outlet />
     </AppShell>
   );

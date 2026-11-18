@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { DevCredit } from "@/components/DevCredit";
-import { useSecao } from "@/hooks/useSecao";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { motion } from "framer-motion";
@@ -24,7 +23,7 @@ const loginSchema = z.object({
 });
 const signupSchema = loginSchema.extend({
   nome: z.string().trim().min(2, "Informe seu nome").max(100),
-  secretaria: z.string().trim().min(2, "Informe sua secretaria").max(100),
+  codigo: z.string().trim().min(4, "Informe o código da sua empresa").max(20),
 });
 const forgotSchema = z.object({
   email: z.string().trim().email("E-mail inválido").max(255),
@@ -32,7 +31,6 @@ const forgotSchema = z.object({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const { secao } = useSecao();
   const { user, loading } = useAuth();
   const [busy, setBusy] = useState(false);
   const [mode, setMode] = useState<"auth" | "forgot">("auth");
@@ -64,16 +62,21 @@ function AuthPage() {
       nome: fd.get("nome"),
       email: fd.get("email"),
       password: fd.get("password"),
-      secretaria: fd.get("secretaria"),
+      codigo: fd.get("codigo"),
     });
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
     setBusy(true);
+    const { data: valido } = await (supabase as any).rpc("codigo_empresa_valido", { _codigo: parsed.data.codigo });
+    if (!valido) {
+      setBusy(false);
+      return toast.error("Código da empresa inválido. Peça o código ao administrador da sua empresa.");
+    }
     const { error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
       options: {
         emailRedirectTo: `${window.location.origin}/app`,
-        data: { nome: parsed.data.nome, secretaria: parsed.data.secretaria },
+        data: { nome: parsed.data.nome, codigo_empresa: parsed.data.codigo.toUpperCase() },
       },
     });
     setBusy(false);
@@ -110,7 +113,7 @@ function AuthPage() {
             <div className="mx-auto h-24 w-24 rounded-3xl bg-white flex items-center justify-center shadow-elegant mb-4 overflow-hidden ring-4 ring-accent/50">
               <img src={logoMJ} alt="Easy Patrol" className="h-full w-full object-cover" />
             </div>
-            <h1 className="font-display text-4xl font-bold tracking-tight">Easy Patrol{secao && <span className="text-accent"> {secao}</span>}</h1>
+            <h1 className="font-display text-4xl font-bold tracking-tight">Easy Patrol</h1>
             <p className="text-sm text-sidebar-foreground/75 mt-1 tracking-wide uppercase">
               Controle inteligente de viaturas
             </p>
@@ -169,8 +172,8 @@ function AuthPage() {
                       <Input id="nome" name="nome" required />
                     </div>
                     <div>
-                      <Label htmlFor="secretaria">Secretaria</Label>
-                      <Input id="secretaria" name="secretaria" placeholder="Ex.: Secretaria de Segurança" required />
+                      <Label htmlFor="codigo">Código da empresa</Label>
+                      <Input id="codigo" name="codigo" placeholder="Ex.: A1B2C3D4" className="font-mono uppercase" autoCapitalize="characters" required />
                     </div>
                     <div>
                       <Label htmlFor="email-s">E-mail</Label>
@@ -184,7 +187,7 @@ function AuthPage() {
                       {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Criar conta"}
                     </Button>
                     <p className="text-xs text-muted-foreground text-center">
-                      Sua conta ficará <b>pendente</b> até aprovação do administrador.
+                      O código é fornecido pelo administrador da sua empresa. Sua conta ficará <b>pendente</b> até ele aprovar.
                     </p>
                   </form>
                 </TabsContent>

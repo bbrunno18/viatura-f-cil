@@ -5,6 +5,8 @@ import { Loader2, UserPlus, User, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
+import { useOrganizacoes } from "@/hooks/useOrganizacoes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +26,9 @@ const schema = z.object({
 
 function Condutores() {
   const qc = useQueryClient();
+  const { isMaster } = useAuth();
+  const { data: empresas = [] } = useOrganizacoes();
+  const [orgSel, setOrgSel] = useState("");
   const [form, setForm] = useState({
     cpf: "", nome: "", telefone: "",
     cnh_numero: "", cnh_categoria: "B", cnh_validade: "",
@@ -47,8 +52,10 @@ function Condutores() {
     if (form.cnh_validade && parseDateOnly(form.cnh_validade)! < new Date(new Date().setHours(0, 0, 0, 0))) {
       return toast.error("A CNH informada está vencida. Cadastre com a validade renovada.");
     }
+    if (isMaster && !orgSel) return toast.error("Selecione a empresa do condutor.");
     setBusy(true);
     const { error } = await supabase.from("condutores").insert({
+      org_id: isMaster ? orgSel : null,
       cpf: onlyDigits(parsed.data.cpf),
       nome: parsed.data.nome,
       telefone: form.telefone || null,
@@ -89,6 +96,15 @@ function Condutores() {
             <Label>Nome</Label>
             <Input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} />
           </div>
+          {isMaster && (
+            <div>
+              <Label>Empresa</Label>
+              <select value={orgSel} onChange={(e) => setOrgSel(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm">
+                <option value="">Selecione…</option>
+                {empresas.map((o) => <option key={o.id} value={o.id}>{o.nome}</option>)}
+              </select>
+            </div>
+          )}
           <div className="grid grid-cols-3 gap-3">
             <div className="col-span-2">
               <Label>CNH</Label>

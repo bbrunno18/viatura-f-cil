@@ -8,7 +8,7 @@ type ViaturasTable = Database["public"]["Tables"]["viaturas"];
 // Colunas reais da tabela `viaturas`:
 // id, modelo, cor, placa, ativa, km_atual, created_at
 export type Viatura = ViaturasTable["Row"];
-export type NovaViatura = Pick<ViaturasTable["Insert"], "modelo" | "cor" | "placa" | "km_atual">;
+export type NovaViatura = Pick<ViaturasTable["Insert"], "modelo" | "cor" | "placa" | "km_atual" | "org_id">;
 
 const QUERY_KEY = ["viaturas-manage"];
 

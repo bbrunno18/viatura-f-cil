@@ -59,10 +59,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             <div className="leading-tight">
               <div className="font-display font-bold text-base">
-                Easy Patrol{secao && <span className="text-accent"> {secao}</span>}
+                Easy Patrol
               </div>
-              <div className="text-[10px] uppercase tracking-widest text-sidebar-foreground/70">
-                Controle de Viaturas
+              <div className="max-w-[11rem] truncate text-[10px] uppercase tracking-widest text-accent">
+                {secao || "Controle de Viaturas"}
               </div>
             </div>
           </Link>

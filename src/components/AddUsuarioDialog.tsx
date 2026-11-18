@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { useOrganizacoes } from "@/hooks/useOrganizacoes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +17,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-const EMPTY = { nome: "", email: "", secretaria: "", senha: "", perfil: "user" as "user" | "admin" };
+const EMPTY = { nome: "", email: "", orgId: "", senha: "", perfil: "user" as "user" | "admin" };
 
 function gerarSenha() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
@@ -26,7 +27,8 @@ function gerarSenha() {
 }
 
 export function AddUsuarioDialog() {
-  const { isMaster } = useAuth();
+  const { isMaster, orgNome } = useAuth();
+  const { data: empresas = [] } = useOrganizacoes();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -47,6 +49,7 @@ export function AddUsuarioDialog() {
     if (form.nome.trim().length < 2) return toast.error("Informe o nome do usuário.");
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return toast.error("E-mail inválido.");
     if (form.senha.length < 6) return toast.error("A senha provisória deve ter pelo menos 6 caracteres.");
+    if (isMaster && !form.orgId) return toast.error("Selecione a empresa do usuário.");
     setBusy(true);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase as any).rpc("admin_criar_usuario", {
@@ -54,7 +57,7 @@ export function AddUsuarioDialog() {
       _nome: form.nome.trim(),
       _senha: form.senha,
       _perfil: form.perfil,
-      _secretaria: form.secretaria.trim() || null,
+      _org_id: isMaster ? form.orgId : null,
     });
     setBusy(false);
     if (error) return toast.error(error.message);
@@ -115,10 +118,24 @@ export function AddUsuarioDialog() {
               <Label htmlFor="u-email">E-mail</Label>
               <Input id="u-email" type="email" inputMode="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} autoComplete="off" placeholder="nome@mj.gov.br" />
             </div>
-            <div>
-              <Label htmlFor="u-sec">Secretaria / setor (opcional)</Label>
-              <Input id="u-sec" value={form.secretaria} onChange={(e) => setForm({ ...form, secretaria: e.target.value })} />
-            </div>
+            {isMaster ? (
+              <div>
+                <Label htmlFor="u-org">Empresa *</Label>
+                <select
+                  id="u-org"
+                  value={form.orgId}
+                  onChange={(e) => setForm({ ...form, orgId: e.target.value })}
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
+                >
+                  <option value="">Selecione…</option>
+                  {empresas.map((o) => <option key={o.id} value={o.id}>{o.nome}</option>)}
+                </select>
+              </div>
+            ) : (
+              <p className="rounded-lg bg-secondary/60 px-3 py-2 text-xs text-muted-foreground">
+                O usuário será criado na sua empresa: <b className="text-foreground">{orgNome ?? "—"}</b>
+              </p>
+            )}
             <div>
               <Label htmlFor="u-senha">Senha provisória</Label>
               <div className="flex gap-2">

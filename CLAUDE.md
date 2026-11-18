@@ -161,3 +161,10 @@ SUPABASE_PROJECT_ID="ecdwhafgltsfikfumyto"
 * Adicionar usuário: Admin > Usuários > "Adicionar usuário" chama a função `admin_criar_usuario` (SECURITY DEFINER). Cria a conta já aprovada, com senha provisória e `must_change_password`. Admin cria só "usuário"; criar "administrador" exige Master. Migração: `20261117100000_app_settings_e_criar_usuario.sql` (já aplicada no banco do Lovable Cloud).
 * Admin-only no cliente: esperar `loading` do `useAuth` (ele só termina depois de carregar os papéis); antes disso `isAdmin` é false e a página redirecionava.
 
+
+## 10. Multiempresa (SaaS) — cada empresa com seus dados
+* Tabela `organizacoes` (`id`, `nome`, `codigo`, `ativa`). `profiles`, `viaturas` e `condutores` têm `org_id`; as demais tabelas herdam a empresa pela `viatura_id`.
+* Isolamento no banco: políticas RLS **restritivas** `org_scope` (funções `my_org_id()`, `org_visivel(uuid)`, `viatura_visivel(uuid)`, `user_visivel(uuid)`). Master vê todas as empresas; admin/usuário só a própria. Gatilhos `set_org_on_insert`/`lock_org_on_update` forçam o `org_id` do usuário logado (Master escolhe).
+* Fluxo de venda: Master cria a empresa em Admin > Empresas clientes (`admin_criar_organizacao`) → cria o administrador dela em Usuários > Adicionar usuário (escolhendo a empresa) → o admin cadastra viaturas/condutores e usuários da sua empresa. Funcionários também podem se cadastrar com o **código da empresa** (`codigo_empresa_valido`, `handle_new_user`); ficam pendentes até um admin da empresa aprovar.
+* Viaturas começam vazias: cada empresa cadastra as suas (somente admin). O nome da empresa aparece no cabeçalho (`useSecao` agora lê `organizacoes.nome`; `SecaoSettings`/`app_settings.secao_nome` foram descontinuados).
+* Migrações: `20261118120000_viaturas_por_secretaria.sql` (modelo antigo, substituído) e `20261118130000_empresas_multitenant.sql` (atual). Já aplicadas no banco do Lovable Cloud.

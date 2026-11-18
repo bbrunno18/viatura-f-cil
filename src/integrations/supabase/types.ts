@@ -97,6 +97,7 @@ export type Database = {
       }
       condutores: {
         Row: {
+          org_id: string | null
           cnh_categoria: string | null
           cnh_numero: string | null
           cnh_validade: string | null
@@ -107,6 +108,7 @@ export type Database = {
           telefone: string | null
         }
         Insert: {
+          org_id?: string | null
           cnh_categoria?: string | null
           cnh_numero?: string | null
           cnh_validade?: string | null
@@ -117,6 +119,7 @@ export type Database = {
           telefone?: string | null
         }
         Update: {
+          org_id?: string | null
           cnh_categoria?: string | null
           cnh_numero?: string | null
           cnh_validade?: string | null
@@ -284,8 +287,33 @@ export type Database = {
         }
         Relationships: []
       }
+      organizacoes: {
+        Row: {
+          ativa: boolean
+          codigo: string
+          created_at: string
+          id: string
+          nome: string
+        }
+        Insert: {
+          ativa?: boolean
+          codigo?: string
+          created_at?: string
+          id?: string
+          nome: string
+        }
+        Update: {
+          ativa?: boolean
+          codigo?: string
+          created_at?: string
+          id?: string
+          nome?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          org_id: string | null
           aprovado: boolean
           created_at: string
           email: string | null
@@ -294,6 +322,7 @@ export type Database = {
           secretaria: string | null
         }
         Insert: {
+          org_id?: string | null
           aprovado?: boolean
           created_at?: string
           email?: string | null
@@ -302,6 +331,7 @@ export type Database = {
           secretaria?: string | null
         }
         Update: {
+          org_id?: string | null
           aprovado?: boolean
           created_at?: string
           email?: string | null
@@ -460,6 +490,7 @@ export type Database = {
       }
       viaturas: {
         Row: {
+          org_id: string | null
           ativa: boolean
           cor: string
           created_at: string
@@ -469,6 +500,7 @@ export type Database = {
           placa: string | null
         }
         Insert: {
+          org_id?: string | null
           ativa?: boolean
           cor: string
           created_at?: string
@@ -478,6 +510,7 @@ export type Database = {
           placa?: string | null
         }
         Update: {
+          org_id?: string | null
           ativa?: boolean
           cor?: string
           created_at?: string

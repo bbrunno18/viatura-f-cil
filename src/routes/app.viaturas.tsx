@@ -25,6 +25,7 @@ import {
 } from "@/hooks/useViaturas";
 import { viaturaSchema } from "@/lib/validators/viatura";
 import { useAuth } from "@/lib/auth";
+import { useOrganizacoes } from "@/hooks/useOrganizacoes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -109,6 +110,9 @@ function AppHeader() {
 
 function AddViaturaButton({ isAdmin }: { isAdmin: boolean }) {
   const add = useAddViatura();
+  const { isMaster, orgNome } = useAuth();
+  const { data: empresas = [] } = useOrganizacoes();
+  const [orgSel, setOrgSel] = useState("");
   const [modelo, setModelo] = useState("");
   const [cor, setCor] = useState("");
   const [placa, setPlaca] = useState("");
@@ -129,17 +133,20 @@ function AddViaturaButton({ isAdmin }: { isAdmin: boolean }) {
     });
     if (!parsed.success)
       return toast.error(parsed.error.issues[0]?.message ?? "Dados inválidos.");
+    if (isMaster && !orgSel) return toast.error("Selecione a empresa da viatura.");
     const { modelo: m, cor: c, placa: p, km_atual } = parsed.data;
     await add.mutateAsync({
       modelo: m,
       cor: c,
       placa: p || null,
       km_atual: km_atual ?? null,
+      org_id: isMaster ? orgSel : null,
     });
     setModelo("");
     setCor("");
     setPlaca("");
     setKmAtual("");
+    setOrgSel("");
     setOpen(false);
   }
 
@@ -155,10 +162,23 @@ function AddViaturaButton({ isAdmin }: { isAdmin: boolean }) {
         <DialogHeader>
           <DialogTitle>Adicionar viatura</DialogTitle>
           <DialogDescription>
-            Cadastre uma nova viatura na frota. Modelo e cor são obrigatórios.
+            Cadastre uma viatura da frota da sua empresa. Modelo e cor são obrigatórios.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {isMaster ? (
+            <div>
+              <Label>Empresa *</Label>
+              <select value={orgSel} onChange={(e) => setOrgSel(e.target.value)} className="mt-1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm">
+                <option value="">Selecione…</option>
+                {empresas.map((o) => <option key={o.id} value={o.id}>{o.nome}</option>)}
+              </select>
+            </div>
+          ) : (
+            <p className="rounded-lg bg-secondary/60 px-3 py-2 text-xs text-muted-foreground">
+              A viatura será cadastrada em: <b className="text-foreground">{orgNome ?? "—"}</b>
+            </p>
+          )}
           <div>
             <Label>Modelo *</Label>
             <Input
@@ -525,7 +545,7 @@ function ViaturasAdmin() {
           <Car className="h-8 w-8 opacity-40" />
           {search
             ? "Nenhuma viatura encontrada."
-            : "Nenhuma viatura cadastrada."}
+            : isAdmin ? "Nenhuma viatura cadastrada ainda. Toque em \"Adicionar viatura\" para começar." : "Nenhuma viatura cadastrada. Peça ao administrador da sua empresa para cadastrar."}
         </div>
       ) : (
         <div className="space-y-2">

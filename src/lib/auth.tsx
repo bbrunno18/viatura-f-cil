@@ -10,6 +10,8 @@ interface AuthContextValue {
   isAdmin: boolean;
   isMaster: boolean;
   aprovado: boolean;
+  orgId: string | null;
+  orgNome: string | null;
   profileLoaded: boolean;
   loading: boolean;
   signOut: () => Promise<void>;
@@ -24,6 +26,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isMaster, setIsMaster] = useState(false);
   const [aprovado, setAprovado] = useState(false);
+  const [orgId, setOrgId] = useState<string | null>(null);
+  const [orgNome, setOrgNome] = useState<string | null>(null);
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -37,6 +41,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsAdmin(false);
         setIsMaster(false);
         setAprovado(false);
+        setOrgId(null);
+        setOrgNome(null);
         setProfileLoaded(false);
       }
     });
@@ -73,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function loadProfile(uid: string, email?: string | null) {
     const [rolesRes, profRes] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", uid),
-      supabase.from("profiles").select("aprovado").eq("id", uid).maybeSingle(),
+      supabase.from("profiles").select("aprovado, org_id").eq("id", uid).maybeSingle(),
     ]);
     const roles = rolesRes.data ?? [];
     const emailIsMaster = (email ?? "").trim().toLowerCase() === MASTER_EMAIL;
@@ -82,13 +88,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsMaster(master);
     setIsAdmin(admin);
     setAprovado(master || admin || !!profRes.data?.aprovado);
+    const oid = profRes.data?.org_id ?? null;
+    setOrgId(oid);
+    if (oid) {
+      const { data: org } = await supabase.from("organizacoes").select("nome").eq("id", oid).maybeSingle();
+      setOrgNome(org?.nome?.trim() || null);
+    } else {
+      setOrgNome(null);
+    }
     setProfileLoaded(true);
   }
 
   return (
     <AuthContext.Provider
       value={{
-        user, session, isAdmin, isMaster, aprovado, profileLoaded, loading,
+        user, session, isAdmin, isMaster, aprovado, orgId, orgNome, profileLoaded, loading,
         signOut: async () => { await supabase.auth.signOut(); },
         refreshProfile: async () => { if (user) await loadProfile(user.id); },
       }}

@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { EmpresasPanel } from "@/components/EmpresasPanel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -17,7 +18,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatBRL, formatCPF, formatDateTime, weekday, todayLocal } from "@/lib/format";
 import { AddUsuarioDialog } from "@/components/AddUsuarioDialog";
-import { SecaoSettings } from "@/components/SecaoSettings";
 import { useSecao } from "@/hooks/useSecao";
 
 export const Route = createFileRoute("/app/admin")({
@@ -235,7 +235,7 @@ function AdminPanel() {
         </div>
       )}
 
-      <SecaoSettings />
+      {isMaster && <EmpresasPanel />}
 
       {stats && stats.pendentes > 0 && (
         <Card className="p-3 bg-warning/10 border-warning/40 text-sm">

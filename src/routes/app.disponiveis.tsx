@@ -110,7 +110,7 @@ function ViaturasDisponiveis() {
               </motion.div>
             );
           })}
-          {total === 0 && <Card className="p-6 text-center text-sm text-muted-foreground">Nenhuma viatura ativa cadastrada.</Card>}
+          {total === 0 && <Card className="p-6 text-center text-sm text-muted-foreground">Nenhuma viatura cadastrada na sua empresa. O administrador deve cadastrá-las em Viaturas.</Card>}
         </div>
       )}
     </div>

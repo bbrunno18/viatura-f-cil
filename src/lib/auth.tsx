@@ -12,6 +12,7 @@ interface AuthContextValue {
   aprovado: boolean;
   orgId: string | null;
   orgNome: string | null;
+  orgLogo: string | null;
   profileLoaded: boolean;
   loading: boolean;
   signOut: () => Promise<void>;
@@ -28,6 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [aprovado, setAprovado] = useState(false);
   const [orgId, setOrgId] = useState<string | null>(null);
   const [orgNome, setOrgNome] = useState<string | null>(null);
+  const [orgLogo, setOrgLogo] = useState<string | null>(null);
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -43,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setAprovado(false);
         setOrgId(null);
         setOrgNome(null);
+        setOrgLogo(null);
         setProfileLoaded(false);
       }
     });
@@ -91,10 +94,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const oid = profRes.data?.org_id ?? null;
     setOrgId(oid);
     if (oid) {
-      const { data: org } = await supabase.from("organizacoes").select("nome").eq("id", oid).maybeSingle();
+      const { data: org } = await supabase.from("organizacoes").select("nome, logo_url").eq("id", oid).maybeSingle();
       setOrgNome(org?.nome?.trim() || null);
+      setOrgLogo(org?.logo_url || null);
     } else {
       setOrgNome(null);
+      setOrgLogo(null);
     }
     setProfileLoaded(true);
   }
@@ -102,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        user, session, isAdmin, isMaster, aprovado, orgId, orgNome, profileLoaded, loading,
+        user, session, isAdmin, isMaster, aprovado, orgId, orgNome, orgLogo, profileLoaded, loading,
         signOut: async () => { await supabase.auth.signOut(); },
         refreshProfile: async () => { if (user) await loadProfile(user.id); },
       }}

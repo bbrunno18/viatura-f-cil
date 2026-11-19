@@ -293,6 +293,7 @@ export type Database = {
           codigo: string
           created_at: string
           id: string
+          logo_url: string | null
           nome: string
         }
         Insert: {
@@ -300,6 +301,7 @@ export type Database = {
           codigo?: string
           created_at?: string
           id?: string
+          logo_url?: string | null
           nome: string
         }
         Update: {
@@ -307,6 +309,7 @@ export type Database = {
           codigo?: string
           created_at?: string
           id?: string
+          logo_url?: string | null
           nome?: string
         }
         Relationships: []

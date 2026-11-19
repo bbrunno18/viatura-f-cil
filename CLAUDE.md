@@ -173,3 +173,8 @@ SUPABASE_PROJECT_ID="ecdwhafgltsfikfumyto"
 * Enquanto o usuário tem saída em aberto, `useRastreamento` (montado em `RastreamentoBanner` no layout `/app`) usa `watchPosition` e faz upsert em `viatura_posicao` (1 linha por viatura; no máx. a cada ~15 s). Só funciona com o app/aba aberto (usa Wake Lock quando disponível); não é rastreador de hardware.
 * `/app/mapa` assina o Realtime da tabela e mostra "ao vivo" se a posição tem < 3 min; cada viatura tem link "Google Maps" (`https://www.google.com/maps?q=lat,lng`) e botão copiar. Sem sinal, mostra a última posição/estacionamento.
 * RLS: só o condutor da saída aberta grava; leitura restrita por empresa (`org_scope`). Migração `20261118140000_posicao_ao_vivo.sql` (já aplicada).
+
+## 12. Logo da empresa no cabeçalho
+* Cada empresa tem sua logo em `organizacoes.logo_url` (bucket público `logos-empresas`, caminho `<org_id>/logo-<timestamp>.<ext>`). Só o Master envia/troca/remove, em Admin > Empresas clientes ("Enviar logo"). PNG/JPG/WEBP/SVG, até 2 MB.
+* `useAuth` expõe `orgLogo`; o `AppShell` mostra a logo da empresa à esquerda e os selos ADMIN/perfil centralizados. Sem logo (ou Master sem empresa), cai no ícone + nome Easy Patrol. A marca Easy Patrol fica no rodapé e no login.
+* Migração `20261119090000_logo_empresa.sql` (já aplicada no banco).

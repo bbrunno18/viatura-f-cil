@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import logoEP from "@/assets/logo-easy-patrol.png";
 import { DevCredit } from "@/components/DevCredit";
-import { useSecao } from "@/hooks/useSecao";
 
 const navLeft = [
   { to: "/app", label: "Início", icon: Home },
@@ -35,7 +34,7 @@ function useOnline() {
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { user, isAdmin, isMaster, signOut } = useAuth();
+  const { user, isAdmin, isMaster, signOut, orgNome, orgLogo } = useAuth();
   const { theme, setTheme } = usePreferences();
   const isDark = theme === "dark" || (theme === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches);
   const roleLabel = isMaster ? "Administrador Master" : isAdmin ? "Administrador" : "Condutor";
@@ -46,46 +45,54 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     : "bg-sidebar-foreground/10 border-sidebar-foreground/20 text-sidebar-foreground/90";
   const location = useLocation();
   const online = useOnline();
-  const { secao } = useSecao();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="bg-gradient-hero bg-hero-pattern text-sidebar-foreground safe-top sticky top-0 z-30 shadow-elegant border-b border-accent/30">
-        <div className="max-w-2xl mx-auto px-4 py-2 flex items-center justify-between">
-          <Link to="/app" className="flex items-center gap-2">
-            <div className="h-11 w-11 rounded-[22%] flex items-center justify-center shadow-card overflow-hidden ring-1 ring-accent/50">
-              <img src={logoEP} alt="Easy Patrol" className="h-full w-full object-cover" />
+        <div className="max-w-2xl mx-auto px-3 py-2 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+          {/* Esquerda: logo da empresa */}
+          <Link to="/app" className="flex items-center gap-2 min-w-0">
+            <div className={cn(
+              "h-11 w-11 shrink-0 rounded-xl flex items-center justify-center overflow-hidden ring-1 ring-accent/50 shadow-card",
+              orgLogo && "bg-white p-1",
+            )}>
+              <img src={orgLogo || logoEP} alt={orgNome || "Easy Patrol"} className={cn("h-full w-full", orgLogo ? "object-contain" : "object-cover")} />
             </div>
-            <div className="leading-tight">
-              <div className="font-display font-bold text-base">
-                Easy Patrol
-              </div>
-              <div className="max-w-[11rem] truncate text-[10px] uppercase tracking-widest text-accent">
-                {secao || "Controle de Viaturas"}
-              </div>
+            <div className="min-w-0 leading-tight">
+              <div className="truncate font-display font-bold text-sm">{orgNome || "Easy Patrol"}</div>
+              {!orgNome && <div className="truncate text-[10px] uppercase tracking-widest text-accent">Controle de Viaturas</div>}
             </div>
           </Link>
-          <div className="flex items-center gap-1">
+
+          {/* Centro: selos de perfil */}
+          <div className="flex flex-col items-center gap-1">
             {isAdmin && (
               <Link
                 to="/app/admin"
-                className="hidden sm:inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/40 px-3 py-1 text-xs font-semibold text-accent"
+                className="inline-flex items-center rounded-full bg-accent/20 border border-accent/40 px-3 py-0.5 text-[11px] font-bold tracking-wider text-accent"
               >
                 ADMIN
               </Link>
             )}
+            <span className={cn("rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap", roleClass)}>
+              {roleLabel}
+            </span>
+          </div>
+
+          {/* Direita: ações */}
+          <div className="flex items-center justify-end">
             <Button
               size="icon"
               variant="ghost"
               onClick={() => setTheme(isDark ? "light" : "dark")}
-              className="text-sidebar-foreground hover:bg-sidebar-accent"
+              className="h-9 w-9 text-sidebar-foreground hover:bg-sidebar-accent"
               aria-label="Alternar tema"
             >
               {isDark ? <Sun className="h-5 w-5"/> : <Moon className="h-5 w-5"/>}
             </Button>
             <Link to="/app/preferencias" aria-label="Preferências">
-              <Button size="icon" variant="ghost" className="text-sidebar-foreground hover:bg-sidebar-accent">
+              <Button size="icon" variant="ghost" className="h-9 w-9 text-sidebar-foreground hover:bg-sidebar-accent">
                 <Settings className="h-5 w-5" />
               </Button>
             </Link>
@@ -93,7 +100,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               size="icon"
               variant="ghost"
               onClick={signOut}
-              className="text-sidebar-foreground hover:bg-sidebar-accent"
+              className="h-9 w-9 text-sidebar-foreground hover:bg-sidebar-accent"
               aria-label="Sair"
             >
               <LogOut className="h-5 w-5" />
@@ -101,11 +108,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         {user && (
-          <div className="max-w-2xl mx-auto px-4 pb-2 flex items-center justify-between gap-2 text-xs text-sidebar-foreground/80">
-            <span className="truncate">{user.email}</span>
-            <span className={cn("shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider", roleClass)}>
-              {roleLabel}
-            </span>
+          <div className="max-w-2xl mx-auto px-4 pb-1.5 text-center text-[11px] text-sidebar-foreground/70 truncate">
+            {user.email}
           </div>
         )}
       </header>
@@ -119,7 +123,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Main */}
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 pb-32">
         {children}
-        <DevCredit className="mt-10 text-muted-foreground" />
+        <div className="mt-10 flex items-center justify-center gap-2 text-muted-foreground">
+          <img src={logoEP} alt="" className="h-5 w-5 rounded-md" />
+          <span className="text-xs font-semibold tracking-wide">Easy Patrol</span>
+        </div>
+        <DevCredit className="mt-3 text-muted-foreground" />
       </main>
 
       {/* Bottom Nav */}

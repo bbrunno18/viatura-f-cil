@@ -5,7 +5,7 @@ import { usePreferences } from "@/lib/preferences";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import logoMJ from "@/assets/logo-mj.png";
+import logoEP from "@/assets/logo-easy-patrol.png";
 import { DevCredit } from "@/components/DevCredit";
 import { useSecao } from "@/hooks/useSecao";
 
@@ -54,8 +54,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="bg-gradient-hero bg-hero-pattern text-sidebar-foreground safe-top sticky top-0 z-30 shadow-elegant border-b border-accent/30">
         <div className="max-w-2xl mx-auto px-4 py-2 flex items-center justify-between">
           <Link to="/app" className="flex items-center gap-2">
-            <div className="h-11 w-11 rounded-xl bg-white flex items-center justify-center shadow-card overflow-hidden ring-2 ring-accent/60">
-              <img src={logoMJ} alt="Easy Patrol" className="h-full w-full object-cover" />
+            <div className="h-11 w-11 rounded-[22%] flex items-center justify-center shadow-card overflow-hidden ring-1 ring-accent/50">
+              <img src={logoEP} alt="Easy Patrol" className="h-full w-full object-cover" />
             </div>
             <div className="leading-tight">
               <div className="font-display font-bold text-base">

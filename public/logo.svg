@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#16397a"/><stop offset="1" stop-color="#0a1c44"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.3" cy="0.2" r="0.8">
+      <stop offset="0" stop-color="#3b6fd6" stop-opacity=".55"/><stop offset="1" stop-color="#3b6fd6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd978"/><stop offset="1" stop-color="#e09a1f"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="112" fill="url(#glow)"/>
+  <!-- trilha / rota -->
+  <path d="M70 440 C 150 470, 230 430, 300 458 S 420 470, 450 430" fill="none" stroke="#5f8be0" stroke-opacity=".55" stroke-width="7" stroke-linecap="round" stroke-dasharray="2 20"/>
+  <!-- escudo -->
+  <path d="M256 62 L396 110 V226 C396 318 336 394 256 450 C176 394 116 318 116 226 V110 Z" fill="url(#gold)" stroke="url(#gold)" stroke-width="22" stroke-linejoin="round"/>
+  <path d="M256 62 L396 110 V226 C396 318 336 394 256 450 C176 394 116 318 116 226 V110 Z" fill="url(#shine)" stroke="url(#shine)" stroke-width="22" stroke-linejoin="round"/>
+  <!-- marcador de localização (olho do pin) -->
+  <circle cx="256" cy="222" r="104" fill="#0c2252"/>
+  <circle cx="256" cy="222" r="104" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="3"/>
+  <!-- ondas de sinal ao vivo -->
+  <path d="M168 150 A 120 120 0 0 1 344 150" fill="none" stroke="#ffd978" stroke-opacity=".0" />
+  <circle cx="256" cy="222" r="80" fill="none" stroke="#5f8be0" stroke-width="5" stroke-opacity=".7" stroke-dasharray="3 14" stroke-linecap="round"/>
+  <!-- check de vistoria -->
+  <path d="M206 224 L240 258 L309 184" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- ponto da viatura ao vivo -->
+  <circle cx="336" cy="154" r="17" fill="#34d399"/>
+  <circle cx="336" cy="154" r="17" fill="none" stroke="#0c2252" stroke-width="7"/>
+</svg>
